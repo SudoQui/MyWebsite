@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mustafa Siddiqui | Resume Preview</title>
+    <style>
+      :root {
+        --ink: #0f1724;
+        --muted: #4a6078;
+        --line: #c8d6e4;
+        --accent: #0f7ea6;
+        --bg: #f2f6fa;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+      }
+      .resume {
+        width: min(860px, calc(100% - 24px));
+        margin: 20px auto;
+        background: #fff;
+        border: 1px solid var(--line);
+        box-shadow: 0 10px 24px rgba(12, 20, 33, 0.14);
+        border-radius: 14px;
+        overflow: hidden;
+      }
+      .head {
+        padding: 24px;
+        background: linear-gradient(130deg, #d7eaf8, #ecf6ff);
+        border-bottom: 1px solid var(--line);
+      }
+      h1 {
+        margin: 0;
+        font-size: 1.8rem;
+      }
+      .subtitle {
+        margin-top: 4px;
+        color: var(--muted);
+      }
+      .contact {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+        color: #2d4560;
+        font-size: 0.9rem;
+      }
+      .content {
+        padding: 22px 24px 26px;
+      }
+      h2 {
+        margin: 0 0 8px;
+        font-size: 1rem;
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      section + section {
+        margin-top: 18px;
+      }
+      p,
+      li {
+        margin: 0;
+        color: #2b425c;
+        line-height: 1.5;
+      }
+      ul {
+        margin: 0;
+        padding-left: 18px;
+        display: grid;
+        gap: 6px;
+      }
+      .role {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px;
+      }
+      .role + .role {
+        margin-top: 8px;
+      }
+      .role-head {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 6px;
+        font-weight: 600;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .actions {
+        width: min(860px, calc(100% - 24px));
+        margin: 0 auto 18px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      button,
+      a {
+        border: 1px solid #9ab2c8;
+        border-radius: 999px;
+        padding: 9px 14px;
+        text-decoration: none;
+        color: #1d3a56;
+        background: #fff;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      @media print {
+        .actions {
+          display: none;
+        }
+        body {
+          background: #fff;
+        }
+        .resume {
+          margin: 0;
+          width: 100%;
+          border: 0;
+          box-shadow: none;
+          border-radius: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="actions">
+      <button type="button" onclick="window.print()">Print or Save as PDF</button>
+      <a href="../../index.html#about">Back to Portfolio</a>
+    </div>
+
+    <article class="resume">
+      <header class="head">
+        <h1>Mustafa Siddiqui</h1>
+        <p class="subtitle">Systems Engineer | AI Engineering | Robotics and Prototyping</p>
+        <div class="contact">
+          <span>Canberra, ACT</span>
+          <span>siddiqui.mm@outlook.com</span>
+          <span>linkedin.com</span>
+          <span>github.com</span>
+        </div>
+      </header>
+
+      <div class="content">
+        <section>
+          <h2>Profile</h2>
+          <p>
+            Systems engineer focused on practical products across software, AI, and robotics. Experienced in shipping
+            usable systems, integrating hardware with software, and improving reliability in real operating conditions.
+          </p>
+        </section>
+
+        <section>
+          <h2>Experience Highlights</h2>
+          <div class="role">
+            <div class="role-head">
+              <span>AI Engineer, Xaana AI</span>
+              <span class="muted">Mar 2025 - Present</span>
+            </div>
+            <ul>
+              <li>Developed OCR and document intelligence pipelines for production use.</li>
+              <li>Built data processing workflows and model deployment practices for secure environments.</li>
+            </ul>
+          </div>
+
+          <div class="role">
+            <div class="role-head">
+              <span>Robotics Research Assistant, University of Canberra</span>
+              <span class="muted">Aug 2024 - Present</span>
+            </div>
+            <ul>
+              <li>Designed and validated rehabilitation robotics prototypes.</li>
+              <li>Mentored students in DSP, controls, and kinematics.</li>
+            </ul>
+          </div>
+
+          <div class="role">
+            <div class="role-head">
+              <span>Endpoint Engineer, Unisys</span>
+              <span class="muted">Aug 2021 - Mar 2025</span>
+            </div>
+            <ul>
+              <li>Automated endpoint workflows and improved system security compliance.</li>
+              <li>Built operational support solutions for government clients.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section>
+          <h2>Skills</h2>
+          <ul>
+            <li>AI Engineering: Computer vision, OCR, ML workflows, MLOps, model deployment.</li>
+            <li>Software: Python, JavaScript, TypeScript, SQL, REST APIs, frontend and backend development.</li>
+            <li>Robotics and Mechanical: SolidWorks, Fusion 360, prototyping, embedded integration, control concepts.</li>
+            <li>Tools: Docker, Jenkins, GitHub, Active Directory, SCCM, Raspberry Pi, Arduino.</li>
+          </ul>
+        </section>
+      </div>
+    </article>
+  </body>
+</html>

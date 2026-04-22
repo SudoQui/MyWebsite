@@ -3,242 +3,547 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Mustafa Siddiqui — Systems Engineer</title>
-    <meta name="description" content="Portfolio of Mustafa Siddiqui — Systems Engineer" />
+    <title>Mustafa Siddiqui | Systems Engineer Portfolio</title>
+    <meta
+      name="description"
+      content="Portfolio of Mustafa Siddiqui, systems engineer focused on AI, robotics, and practical engineering systems."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="resources/css/index.css" />
   </head>
 
   <body>
-    <main class="hero" id="home">
-      <!-- RINGS BACKDROP -->
-      <div class="rings" aria-hidden="true">
-        <div class="ring r1"></div>
-        <div class="ring r2"></div>
-        <div class="ring r3"></div>
-        <div class="ring r4"></div>
-      </div>
+    <div class="site-noise" aria-hidden="true"></div>
 
-      <!-- TOP BAR -->
-      <div class="top">
-        <div class="socials" aria-label="Social links">
-          <a href="#" aria-label="LinkedIn" title="LinkedIn" class="icon" target="_blank" rel="noreferrer">
-            <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28" aria-hidden="true">
-              <path
-                d="M4.983 3.5C4.983 4.88 3.88 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.983 2.12 4.983 3.5zM.2 8h4.6v16H.2zM8.7 8h4.41v2.18h.06A4.84 4.84 0 0 1 17.5 8c3.39 0 4.02 2.23 4.02 5.14V24h-4.6v-7.1c0-1.69-.03-3.86-2.35-3.86-2.36 0-2.72 1.84-2.72 3.74V24H7.25V8H8.7z"
-              />
-            </svg>
-          </a>
+    <main>
+      <section id="home" class="hero">
+        <div class="rings" aria-hidden="true">
+          <div class="ring r1"></div>
+          <div class="ring r2"></div>
+          <div class="ring r3"></div>
+          <div class="ring r4"></div>
+        </div>
 
-          <a href="#" aria-label="GitHub" title="GitHub" class="icon" target="_blank" rel="noreferrer">
-            <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28" aria-hidden="true">
-              <path
-                fill-rule="evenodd"
-                d="M12 .5C5.73.5.98 5.24.98 11.52c0 4.86 3.15 8.98 7.52 10.43.55.1.75-.24.75-.53v-1.86c-3.06.67-3.7-1.3-3.7-1.3-.5-1.27-1.22-1.6-1.22-1.6-.99-.67.08-.65.08-.65 1.1.08 1.68 1.14 1.68 1.14.98 1.67 2.56 1.19 3.18.9.1-.71.39-1.19.71-1.47-2.44-.28-5-1.22-5-5.45 0-1.2.43-2.17 1.14-2.94-.12-.28-.49-1.42.11-2.95 0 0 .93-.3 3.05 1.12a10.6 10.6 0 0 1 2.78-.37c.94 0 1.88.13 2.77.37 2.12-1.42 3.05-1.12 3.05-1.12.6 1.53.23 2.67.12 2.95.71.77 1.14 1.74 1.14 2.94 0 4.24-2.56 5.17-5 5.45.4.34.76 1.01.76 2.03v3c0 .29.2.64.76.53 4.37-1.45 7.51-5.57 7.51-10.43C23.02 5.24 18.27.5 12 .5Z"
-                clip-rule="evenodd"
-              />
-            </svg>
+        <div class="top">
+          <div class="socials" aria-label="Social links">
+            <a href="https://www.linkedin.com/" aria-label="LinkedIn" title="LinkedIn" class="icon" target="_blank" rel="noreferrer">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24" aria-hidden="true">
+                <path d="M4.983 3.5C4.983 4.88 3.88 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.983 2.12 4.983 3.5zM.2 8h4.6v16H.2zM8.7 8h4.41v2.18h.06A4.84 4.84 0 0 1 17.5 8c3.39 0 4.02 2.23 4.02 5.14V24h-4.6v-7.1c0-1.69-.03-3.86-2.35-3.86-2.36 0-2.72 1.84-2.72 3.74V24H7.25V8H8.7z" />
+              </svg>
+            </a>
+            <a href="https://github.com/" aria-label="GitHub" title="GitHub" class="icon" target="_blank" rel="noreferrer">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24" aria-hidden="true">
+                <path d="M12 .5C5.73.5.98 5.24.98 11.52c0 4.86 3.15 8.98 7.52 10.43.55.1.75-.24.75-.53v-1.86c-3.06.67-3.7-1.3-3.7-1.3-.5-1.27-1.22-1.6-1.22-1.6-.99-.67.08-.65.08-.65 1.1.08 1.68 1.14 1.68 1.14.98 1.67 2.56 1.19 3.18.9.1-.71.39-1.19.71-1.47-2.44-.28-5-1.22-5-5.45 0-1.2.43-2.17 1.14-2.94-.12-.28-.49-1.42.11-2.95 0 0 .93-.3 3.05 1.12a10.6 10.6 0 0 1 2.78-.37c.94 0 1.88.13 2.77.37 2.12-1.42 3.05-1.12 3.05-1.12.6 1.53.23 2.67.12 2.95.71.77 1.14 1.74 1.14 2.94 0 4.24-2.56 5.17-5 5.45.4.34.76 1.01.76 2.03v3c0 .29.2.64.76.53 4.37-1.45 7.51-5.57 7.51-10.43C23.02 5.24 18.27.5 12 .5Z" />
+              </svg>
+            </a>
+            <a href="https://discord.com/" aria-label="Discord" title="Discord" class="icon" target="_blank" rel="noreferrer">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24" aria-hidden="true">
+                <path d="M20.3 4.4A18.3 18.3 0 0 0 15.8 3l-.2.4a16.4 16.4 0 0 1 4.6 2.3 15.4 15.4 0 0 0-5.4-2.6 16 16 0 0 0-5.6 0A15.4 15.4 0 0 0 3.8 5.7a16.4 16.4 0 0 1 4.6-2.3L8.2 3a18.3 18.3 0 0 0-4.5 1.4C.9 8.4.3 12.3.6 16.2a18.8 18.8 0 0 0 5.4 2.8l1.3-2a11.9 11.9 0 0 1-2.1-1l.5-.3c3.9 1.8 8.1 1.8 12-.1l.5.4c-.7.4-1.4.8-2.1 1l1.3 2a18.8 18.8 0 0 0 5.4-2.8c.4-4.6-.7-8.5-2.5-11.8ZM9.4 13.8c-1 0-1.8-.9-1.8-2s.8-2 1.8-2c1 0 1.8.9 1.8 2s-.8 2-1.8 2Zm5.2 0c-1 0-1.8-.9-1.8-2s.8-2 1.8-2c1 0 1.8.9 1.8 2s-.8 2-1.8 2Z" />
+              </svg>
+            </a>
+            <a href="https://www.researchgate.net/" aria-label="ResearchGate" title="ResearchGate" class="icon" target="_blank" rel="noreferrer">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24" aria-hidden="true">
+                <path d="M4 3h6.7c3.8 0 6.1 2.1 6.1 5.5 0 2.4-1.2 4.2-3.3 5l4.5 7h-4.3l-4-6.4H8.1V21H4V3Zm6.1 7.9c1.7 0 2.6-.8 2.6-2.3s-.9-2.2-2.6-2.2H8.1V11h2Z" />
+              </svg>
+            </a>
+          </div>
+
+          <a class="logo-link" href="mailto:Siddiqui.mm@outlook.com" aria-label="Email Mustafa">
+            <img src="resources/img/logo1.png" alt="Mustafa Siddiqui logo" />
           </a>
         </div>
 
-        <a class="logo-link" href="mailto:Siddiqui.mm@outlook.com">
-          <img src="resources/img/logo1.png" alt="Logo" />
-        </a>
-      </div>
+        <div class="center">
+          <span class="avatar">
+            <img src="resources/img/icon.png" alt="Portrait of Mustafa" />
+          </span>
+          <div class="subtitle">SYSTEMS ENGINEER</div>
+          <div class="subtitle">Robotics and AI</div>
+          <h1>MUSTAFA SIDDIQUI</h1>
+        </div>
 
-      <!-- CENTER CONTENT -->
-      <div class="center">
-        <span class="avatar">
-          <img src="resources/img/icon.png" alt="Portrait of Mustafa" />
-        </span>
-        <div class="subtitle">SYSTEMS ENGINEER</div>
-        <div class="subtitle">Robotics and AI</div>
-        <h1>MUSTAFA SIDDIQUI</h1>
-      </div>
+        <nav class="tabs" aria-label="Sections">
+          <a class="tab" href="#experience">Experience</a>
+          <a class="tab" href="#skills">Skills</a>
+          <a class="tab" href="#projects">Projects</a>
+          <a class="tab" href="#about">About</a>
+        </nav>
 
-      <!-- BOTTOM TABS -->
-      <nav class="tabs" aria-label="Sections">
-        <a class="tab" href="#experience">Experience</a>
-        <a class="tab" href="#skills">Skills</a>
-        <a class="tab" href="#projects">Projects</a>
-        <a class="tab" href="#about">About</a>
-      </nav>
+        <nav class="dots" aria-label="Page dots">
+          <a class="dot" href="#home" aria-current="true" title="Home"></a>
+          <a class="dot" href="#experience" title="Experience"></a>
+          <a class="dot" href="#skills" title="Skills"></a>
+          <a class="dot" href="#projects" title="Projects"></a>
+          <a class="dot" href="#about" title="About"></a>
+        </nav>
+      </section>
 
-      <!-- RIGHT DOTS -->
-      <nav class="dots" aria-label="Page dots">
-        <a class="dot" href="#home" aria-current="true" title="Home"></a>
-        <a class="dot" href="#skills" title="Skills"></a>
-        <a class="dot" href="#projects" title="Projects"></a>
-        <a class="dot" href="#about" title="About"></a>
-      </nav>
+      <section id="experience" class="section timeline reveal">
+        <div class="section-head">
+          <p class="eyebrow">Experience</p>
+          <h2>Applied engineering across AI, robotics, and secure systems</h2>
+        </div>
+
+        <ul class="tl" aria-label="Experience timeline">
+          <li class="tl-item reveal">
+            <span class="tl-dot" aria-hidden="true"></span>
+
+            <div class="tl-time">
+              <div class="date">Mar 2025 - Present</div>
+              <div class="place">Canberra, ACT</div>
+            </div>
+
+            <article class="tl-card">
+              <h3>Xaana AI - AI Engineer</h3>
+              <a class="thumb" href="https://www.xaana.ai/einvoice" target="_blank" rel="noreferrer">
+                <img src="resources/img/xaana_logo.jpeg" alt="Xaana AI logo and platform" />
+                <span class="thumb-overlay">
+                  <span class="summary">
+                    Developed ML pipelines for intelligent document processing and built generative AI tools, reducing
+                    invoice handling and research time across secure environments.
+                  </span>
+                </span>
+              </a>
+            </article>
+          </li>
+
+          <li class="tl-item reveal">
+            <span class="tl-dot" aria-hidden="true"></span>
+
+            <div class="tl-time">
+              <div class="date">Aug 2024 - Present</div>
+              <div class="place">Canberra, ACT</div>
+            </div>
+
+            <article class="tl-card">
+              <h3>University of Canberra - Robotics Research Assistant and Tutor</h3>
+              <a class="thumb" href="https://collaborativeroboticslab.github.io/" target="_blank" rel="noreferrer">
+                <img src="resources/img/UCRobotics.png" alt="UC robotics project" />
+                <span class="thumb-overlay">
+                  <span class="summary">
+                    Designed robotic rehabilitation devices and delivered tutorials on DSP, control systems, and
+                    kinematics, mentoring 100+ students in advanced engineering courses.
+                  </span>
+                </span>
+              </a>
+            </article>
+          </li>
+
+          <li class="tl-item reveal">
+            <span class="tl-dot" aria-hidden="true"></span>
+
+            <div class="tl-time">
+              <div class="date">Aug 2021 - Mar 2025</div>
+              <div class="place">Canberra, ACT</div>
+            </div>
+
+            <article class="tl-card">
+              <h3>Unisys - Endpoint Engineer</h3>
+              <a class="thumb" href="https://www.unisys.com" target="_blank" rel="noreferrer">
+                <img src="resources/img/unisys.jpg" alt="Unisys workplace support" />
+                <span class="thumb-overlay">
+                  <span class="summary">
+                    Provided escalated IT support, automated workstation rollouts, and enforced system security for
+                    government staff across secure environments.
+                  </span>
+                </span>
+              </a>
+            </article>
+          </li>
+
+          <li class="tl-item reveal">
+            <span class="tl-dot" aria-hidden="true"></span>
+
+            <div class="tl-time">
+              <div class="date">Nov 2020 - Feb 2021</div>
+              <div class="place">Canberra, ACT</div>
+            </div>
+
+            <article class="tl-card">
+              <h3>Nova Systems - Systems Engineering Intern</h3>
+              <a class="thumb" href="https://www.novasystems.com/au/case-study/lunar-services-rover" target="_blank" rel="noreferrer">
+                <img src="resources/img/nova.jpeg" alt="Nova Systems rover project" />
+                <span class="thumb-overlay">
+                  <span class="summary">
+                    Contributed to rover system design and real-time telemetry, integrating sensors, Raspberry Pi, and
+                    Fusion360 for aerospace-grade prototypes.
+                  </span>
+                </span>
+              </a>
+            </article>
+          </li>
+
+          <li class="tl-item reveal">
+            <span class="tl-dot" aria-hidden="true"></span>
+
+            <div class="tl-time">
+              <div class="date">2020</div>
+              <div class="place">Canberra, ACT</div>
+            </div>
+
+            <article class="tl-card">
+              <h3>Ionize - Cybersecurity Intern</h3>
+              <a class="thumb" href="https://ionize.com.au" target="_blank" rel="noreferrer">
+                <img src="resources/img/ionize.png" alt="Ionize cybersecurity tools" />
+                <span class="thumb-overlay">
+                  <span class="summary">
+                    Assisted in penetration testing and vulnerability analysis across multi-OS environments, applying
+                    Wireshark, Kali Linux, and Python tools.
+                  </span>
+                </span>
+              </a>
+            </article>
+          </li>
+
+          <li class="tl-item reveal">
+            <span class="tl-dot" aria-hidden="true"></span>
+
+            <div class="tl-time">
+              <div class="date">Mar 2018 - Sep 2019</div>
+              <div class="place">Canberra, ACT</div>
+            </div>
+
+            <article class="tl-card">
+              <h3>Questacon - Gallery Assistant</h3>
+              <a class="thumb" href="https://www.questacon.edu.au" target="_blank" rel="noreferrer">
+                <img src="resources/img/questacon.png" alt="Questacon gallery engagement" />
+                <span class="thumb-overlay">
+                  <span class="summary">
+                    Supported public science engagement and safety operations, applying APS standards while enhancing
+                    visitor experience in exhibitions.
+                  </span>
+                </span>
+              </a>
+            </article>
+          </li>
+        </ul>
+      </section>
+
+      <section id="skills" class="skills section reveal">
+        <div class="section-head">
+          <p class="eyebrow">Skills</p>
+          <h2>An interactive engineering toolbox</h2>
+          <p>
+            Built to evolve over time. Categories are modular, so adding or removing tools only requires editing one
+            card block.
+          </p>
+        </div>
+
+        <div class="skills-marquee" aria-hidden="true">
+          <div class="skills-marquee-track">
+            <span>Computer Vision</span>
+            <span>MLOps</span>
+            <span>PyTorch</span>
+            <span>OpenCV</span>
+            <span>Control Systems</span>
+            <span>Embedded Integration</span>
+            <span>REST APIs</span>
+            <span>CI/CD</span>
+            <span>Docker</span>
+            <span>Robotics</span>
+            <span>Computer Vision</span>
+            <span>MLOps</span>
+            <span>PyTorch</span>
+            <span>OpenCV</span>
+            <span>Control Systems</span>
+            <span>Embedded Integration</span>
+            <span>REST APIs</span>
+            <span>CI/CD</span>
+            <span>Docker</span>
+            <span>Robotics</span>
+          </div>
+        </div>
+
+        <div class="skills-grid">
+          <article class="skill-card reveal tone-ai">
+            <h3>AI Engineering</h3>
+            <p>Designing robust AI systems from data ingestion and OCR to deployment and monitoring.</p>
+            <div class="skill-bars">
+              <div><label>Computer Vision and OCR</label><span style="--w: 92%"></span></div>
+              <div><label>ML Workflows and MLOps</label><span style="--w: 88%"></span></div>
+              <div><label>Model Deployment</label><span style="--w: 84%"></span></div>
+            </div>
+            <div class="skill-tags">
+              <span>PyTorch</span><span>OpenCV</span><span>PaddleOCR</span><span>LLM Tools</span><span>Data Pipelines</span>
+            </div>
+          </article>
+
+          <article class="skill-card reveal tone-software">
+            <h3>Software Engineering</h3>
+            <p>Shipping maintainable backend and frontend systems with strong API and deployment discipline.</p>
+            <div class="skill-bars">
+              <div><label>Backend Logic and APIs</label><span style="--w: 90%"></span></div>
+              <div><label>Frontend Development</label><span style="--w: 82%"></span></div>
+              <div><label>CI/CD and Deployment</label><span style="--w: 86%"></span></div>
+            </div>
+            <div class="skill-tags">
+              <span>Python</span><span>JavaScript</span><span>TypeScript</span><span>HTML</span><span>CSS</span><span>SQL</span><span>REST APIs</span><span>Git</span>
+            </div>
+          </article>
+
+          <article class="skill-card reveal tone-robotics">
+            <h3>Mechanical and Robotics Engineering</h3>
+            <p>Building integrated systems where hardware and software work together under real constraints.</p>
+            <div class="skill-bars">
+              <div><label>System Prototyping</label><span style="--w: 87%"></span></div>
+              <div><label>Sensor and Embedded Integration</label><span style="--w: 85%"></span></div>
+              <div><label>Control and Kinematics</label><span style="--w: 81%"></span></div>
+            </div>
+            <div class="skill-tags">
+              <span>SolidWorks</span><span>Fusion 360</span><span>Robotics</span><span>Kinematics</span><span>Hardware Design</span><span>Embedded Systems</span>
+            </div>
+          </article>
+
+          <article class="skill-card reveal tone-tools">
+            <h3>Tools and Platforms</h3>
+            <p>Operational tools used to deploy, automate, monitor, and maintain engineering systems.</p>
+            <div class="skill-bars">
+              <div><label>Automation Platforms</label><span style="--w: 84%"></span></div>
+              <div><label>DevOps Tooling</label><span style="--w: 82%"></span></div>
+              <div><label>Embedded Platforms</label><span style="--w: 88%"></span></div>
+            </div>
+            <div class="skill-tags">
+              <span>Jenkins</span><span>Docker</span><span>Active Directory</span><span>SCCM</span><span>Raspberry Pi</span><span>Arduino</span><span>GitHub</span><span>Supabase</span><span>Vercel</span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="projects" class="projects section reveal">
+        <div class="section-head">
+          <p class="eyebrow">Projects</p>
+          <h2>Systems I have built across work, university, and personal labs</h2>
+        </div>
+
+        <div class="project-filters" role="toolbar" aria-label="Project filters">
+          <button class="filter-btn active" data-filter="all" aria-pressed="true">All</button>
+          <button class="filter-btn" data-filter="work-experience" aria-pressed="false">Work Experience</button>
+          <button class="filter-btn" data-filter="personal" aria-pressed="false">Personal</button>
+          <button class="filter-btn" data-filter="university" aria-pressed="false">University</button>
+          <button class="filter-btn" data-filter="ai" aria-pressed="false">AI</button>
+          <button class="filter-btn" data-filter="research-and-contributions" aria-pressed="false">Research and Contributions</button>
+          <button class="filter-btn" data-filter="robotics" aria-pressed="false">Robotics</button>
+          <button class="filter-btn" data-filter="programming-projects" aria-pressed="false">Programming Projects</button>
+        </div>
+
+        <div class="projects-grid" id="projects-grid">
+          <article class="project-card reveal" data-filters="work-experience ai programming-projects">
+            <img src="resources/img/xaana_logo.jpeg" alt="Invoice OCR platform" />
+            <div class="project-content">
+              <h3>Intelligent Invoice OCR Platform</h3>
+              <p>
+                Built production OCR pipelines with model fallbacks, document classification, and structured data export.
+              </p>
+              <div class="tag-row">
+                <span>AI</span><span>Computer Vision</span><span>OCR</span><span>MLOps</span><span>Work</span><span>Data</span>
+              </div>
+              <p class="tools"><strong>Key tools:</strong> PyTorch, PaddleOCR, Python, Docker</p>
+              <a class="project-link" href="projects/invoice-ocr-platform.html">View Details</a>
+            </div>
+          </article>
+
+          <article class="project-card reveal" data-filters="university robotics research-and-contributions">
+            <img src="resources/img/UCRobotics.png" alt="Rehabilitation robotics prototype" />
+            <div class="project-content">
+              <h3>Rehabilitation Robotics Prototype</h3>
+              <p>Co-designed assistive robotic mechanisms and validated motion control for repeatable patient exercises.</p>
+              <div class="tag-row">
+                <span>Robotics</span><span>Mechanical</span><span>Research</span><span>University</span><span>Hardware</span>
+              </div>
+              <p class="tools"><strong>Key tools:</strong> Fusion 360, MATLAB, Embedded Sensors</p>
+              <a class="project-link" href="projects/rehab-robotics-prototype.html">View Details</a>
+            </div>
+          </article>
+
+          <article class="project-card reveal" data-filters="work-experience programming-projects">
+            <img src="resources/img/unisys.jpg" alt="Secure endpoint automation" />
+            <div class="project-content">
+              <h3>Secure Endpoint Automation Framework</h3>
+              <p>Automated provisioning and patch workflows for secure enterprise environments with audit-friendly reporting.</p>
+              <div class="tag-row">
+                <span>Work</span><span>Automation</span><span>Software</span><span>Dashboard</span><span>Data</span>
+              </div>
+              <p class="tools"><strong>Key tools:</strong> SCCM, PowerShell, Active Directory, SQL</p>
+              <a class="project-link" href="projects/endpoint-automation-framework.html">View Details</a>
+            </div>
+          </article>
+
+          <article class="project-card reveal" data-filters="work-experience university robotics research-and-contributions">
+            <img src="resources/img/nova.jpeg" alt="Lunar rover subsystem" />
+            <div class="project-content">
+              <h3>Lunar Rover Telemetry Subsystem</h3>
+              <p>Built and tested sensor telemetry pipelines for a rover concept, from data capture to remote monitoring.</p>
+              <div class="tag-row">
+                <span>Robotics</span><span>Embedded</span><span>Research</span><span>Work</span><span>University</span>
+              </div>
+              <p class="tools"><strong>Key tools:</strong> Raspberry Pi, Python, Fusion 360</p>
+              <a class="project-link" href="projects/lunar-rover-telemetry.html">View Details</a>
+            </div>
+          </article>
+
+          <article class="project-card reveal" data-filters="personal ai programming-projects">
+            <img src="resources/img/icon.JPG" alt="PPE detection system" />
+            <div class="project-content">
+              <h3>PPE Vision Safety Assistant</h3>
+              <p>Developed a lightweight vision model to detect missing safety gear in workshop settings in near real time.</p>
+              <div class="tag-row">
+                <span>AI</span><span>Computer Vision</span><span>Personal</span><span>Software</span><span>Automation</span>
+              </div>
+              <p class="tools"><strong>Key tools:</strong> OpenCV, PyTorch, Flask, Vercel</p>
+              <a class="project-link" href="projects/ppe-vision-safety-assistant.html">View Details</a>
+            </div>
+          </article>
+
+          <article class="project-card reveal" data-filters="personal programming-projects">
+            <img src="resources/img/ionize.png" alt="IoT monitoring dashboard" />
+            <div class="project-content">
+              <h3>IoT Environment Monitoring Dashboard</h3>
+              <p>Created an IoT stack for environmental sensing with cloud sync, alerting, and a mobile friendly dashboard.</p>
+              <div class="tag-row">
+                <span>IoT</span><span>Dashboard</span><span>Full Stack</span><span>Personal</span><span>Hardware</span>
+              </div>
+              <p class="tools"><strong>Key tools:</strong> Arduino, Supabase, JavaScript, REST API</p>
+              <a class="project-link" href="projects/iot-environment-dashboard.html">View Details</a>
+            </div>
+          </article>
+
+          <article class="project-card reveal" data-filters="personal programming-projects">
+            <img src="resources/img/questacon.png" alt="Bluetooth attendance app" />
+            <div class="project-content">
+              <h3>Bluetooth Attendance Mobile App</h3>
+              <p>Built an Android app that verifies attendance through Bluetooth proximity and stores encrypted logs.</p>
+              <div class="tag-row">
+                <span>Mobile App</span><span>Android</span><span>Bluetooth</span><span>Software</span><span>Personal</span>
+              </div>
+              <p class="tools"><strong>Key tools:</strong> Kotlin, SQLite, Bluetooth LE</p>
+              <a class="project-link" href="projects/bluetooth-attendance-app.html">View Details</a>
+            </div>
+          </article>
+
+          <article class="project-card reveal" data-filters="university research-and-contributions robotics">
+            <img src="resources/img/dxc_logo.png" alt="Community robotics contribution" />
+            <div class="project-content">
+              <h3>Community Robotics Outreach Kits</h3>
+              <p>Led the build of portable kits used to teach robotics fundamentals in community STEM workshops.</p>
+              <div class="tag-row">
+                <span>Leadership</span><span>Community</span><span>Robotics</span><span>University</span><span>Research</span>
+              </div>
+              <p class="tools"><strong>Key tools:</strong> Arduino, CAD, Python, Documentation</p>
+              <a class="project-link" href="projects/community-robotics-outreach-kits.html">View Details</a>
+            </div>
+          </article>
+        </div>
+        <p class="empty-state" id="empty-project-state" hidden>No projects match this filter yet.</p>
+      </section>
+
+      <section id="about" class="about section reveal">
+        <div class="section-head">
+          <p class="eyebrow">About</p>
+          <h2>Personal, practical, and grounded in real world engineering</h2>
+        </div>
+
+        <div class="about-grid">
+          <article class="about-card reveal about-intro">
+            <h3>Who I am beyond a job title</h3>
+            <p>
+              I am an engineer who enjoys turning uncertainty into workable systems. I value clarity, reliability, and
+              thoughtful execution. My best work sits at the intersection of software, hardware, and human impact.
+            </p>
+            <p>
+              I prefer projects where I can own the full loop: understand the problem, build a prototype, test in real
+              conditions, and refine until it becomes useful.
+            </p>
+          </article>
+
+          <article class="about-card reveal know-me">
+            <h3>Know me beyond engineering</h3>
+            <ul>
+              <li>Values: accountability, curiosity, and engineering craftsmanship</li>
+              <li>Interests: robotics labs, rapid prototyping, and science outreach</li>
+              <li>Mindset: practical solutions over flashy demos</li>
+              <li>Working style: collaborative, structured, and delivery focused</li>
+            </ul>
+          </article>
+
+          <article class="about-card reveal future-vision">
+            <h3>Where I see myself in a few years</h3>
+            <p>
+              I want to grow into a systems engineer who leads multidisciplinary products in AI, robotics, aerospace,
+              and medical technology. The long term goal is to build meaningful systems that improve safety, access,
+              and public impact.
+            </p>
+            <p>
+              I am especially interested in projects that combine machine intelligence with reliable hardware for
+              high-stakes real world environments.
+            </p>
+          </article>
+
+          <article class="about-card reveal resume-card">
+            <h3>Resume Preview</h3>
+            <div class="resume-preview" role="img" aria-label="Styled resume preview">
+              <div class="resume-header">
+                <strong>Mustafa Siddiqui</strong>
+                <span>Systems Engineer | AI | Robotics</span>
+              </div>
+              <div class="resume-lines">
+                <span></span><span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <div class="resume-cols">
+                <span></span><span></span>
+              </div>
+            </div>
+            <div class="resume-actions">
+              <a class="btn small" href="resources/docs/mustafa-siddiqui-resume.html" download>Download Resume</a>
+              <a class="btn small ghost" href="resources/docs/mustafa-siddiqui-resume.html" target="_blank" rel="noreferrer">Open Full Preview</a>
+            </div>
+          </article>
+
+          <article class="about-card reveal photo-wall">
+            <h3>Engineering moments</h3>
+            <div class="photo-grid">
+              <figure>
+                <img src="resources/img/icon.JPG" alt="Professional portrait" />
+                <figcaption>Professional profile</figcaption>
+              </figure>
+              <figure>
+                <img src="resources/img/UCRobotics.png" alt="Robotics workspace" />
+                <figcaption>Robotics workspace</figcaption>
+              </figure>
+              <figure>
+                <img src="resources/img/nova.jpeg" alt="Prototype session" />
+                <figcaption>Prototype iterations</figcaption>
+              </figure>
+              <figure>
+                <img src="resources/img/xaana_logo.jpeg" alt="AI system delivery" />
+                <figcaption>AI systems delivery</figcaption>
+              </figure>
+            </div>
+          </article>
+        </div>
+      </section>
     </main>
 
-    <section id="experience" class="section timeline">
-      <h2>Experience</h2>
-      <p class="muted">Images link to GitHub repos. Click to view source or project notes.</p>
+    <footer class="site-footer">
+      <div class="footer-main">
+        <p class="footer-note">
+          Thanks for visiting. I build systems that solve real problems and connect software, data, and hardware with
+          engineering discipline.
+        </p>
+        <div class="footer-links" aria-label="Footer social links">
+          <a href="https://www.linkedin.com/" target="_blank" rel="noreferrer">LinkedIn</a>
+          <a href="https://github.com/" target="_blank" rel="noreferrer">GitHub</a>
+          <a href="https://discord.com/" target="_blank" rel="noreferrer">Discord</a>
+          <a href="https://www.researchgate.net/" target="_blank" rel="noreferrer">ResearchGate</a>
+        </div>
+      </div>
+      <p class="copyright">&copy; <span id="year"></span> Mustafa Siddiqui. All rights reserved.</p>
+    </footer>
 
-      <ul class="tl" aria-label="Experience timeline">
-        <li class="tl-item">
-          <span class="tl-dot" aria-hidden="true"></span>
-
-          <div class="tl-time">
-            <div class="date">Mar 2025 - Present</div>
-            <div class="place">Canberra, ACT</div>
-          </div>
-
-          <article class="tl-card">
-            <h3>Xaana AI - AI Engineer</h3>
-            <a class="thumb" href="https://www.xaana.ai/einvoice" target="_blank" rel="noreferrer">
-              <img src="resources/img/xaana_logo.jpeg" alt="Xaana AI logo and platform" />
-              <span class="thumb-overlay">
-                <span class="summary">
-                  Developed ML pipelines for intelligent document processing and built generative AI tools, reducing
-                  invoice handling and research time across secure environments.
-                </span>
-              
-              </span>
-            </a>
-          </article>
-        </li>
-
-        <li class="tl-item">
-          <span class="tl-dot" aria-hidden="true"></span>
-
-          <div class="tl-time">
-            <div class="date">Aug 2024 - Present</div>
-            <div class="place">Canberra, ACT</div>
-          </div>
-
-          <article class="tl-card">
-            <h3>University of Canberra - Robotics Research Assistant and Tutor</h3>
-            <a class="thumb" href="https://collaborativeroboticslab.github.io/" target="_blank" rel="noreferrer">
-              <img src="resources/img/UCRobotics.png" alt="UC robotics project" />
-              <span class="thumb-overlay">
-                <span class="summary">
-                  Designed robotic rehabilitation devices and delivered tutorials on DSP, control systems, and kinematics,
-                  mentoring 100+ students in advanced engineering courses.
-                </span>
-                
-              </span>
-            </a>
-          </article>
-        </li>
-
-        <li class="tl-item">
-          <span class="tl-dot" aria-hidden="true"></span>
-
-          <div class="tl-time">
-            <div class="date">Aug 2021 - Mar 2025</div>
-            <div class="place">Canberra, ACT</div>
-          </div>
-
-          <article class="tl-card">
-            <h3>Unisys - Endpoint Engineer</h3>
-            <a class="thumb" href="https://www.unisys.com" target="_blank" rel="noreferrer">
-              <img src="resources/img/unisys.jpg" alt="Unisys workplace support" />
-              <span class="thumb-overlay">
-                <span class="summary">
-                  Provided escalated IT support, automated workstation rollouts, and enforced system security for
-                  government staff across secure environments.
-                </span>
-                
-              </span>
-            </a>
-          </article>
-        </li>
-
-        <li class="tl-item">
-          <span class="tl-dot" aria-hidden="true"></span>
-
-          <div class="tl-time">
-            <div class="date">Nov 2020 - Feb 2021</div>
-            <div class="place">Canberra, ACT</div>
-          </div>
-
-          <article class="tl-card">
-            <h3>Nova Systems - Systems Engineering Intern</h3>
-            <a class="thumb" href="https://www.novasystems.com/au/case-study/lunar-services-rover" target="_blank" rel="noreferrer">
-              <img src="resources/img/nova.jpeg" alt="Nova Systems rover project" />
-              <span class="thumb-overlay">
-                <span class="summary">
-                  Contributed to rover system design and real-time telemetry, integrating sensors, Raspberry Pi, and
-                  Fusion360 for aerospace-grade prototypes.
-                </span>
-                
-              </span>
-            </a>
-          </article>
-        </li>
-
-        <li class="tl-item">
-          <span class="tl-dot" aria-hidden="true"></span>
-
-          <div class="tl-time">
-            <div class="date">2020</div>
-            <div class="place">Canberra, ACT</div>
-          </div>
-
-          <article class="tl-card">
-            <h3>Ionize - Cybersecurity Intern</h3>
-            <a class="thumb" href="https://ionize.com.au" target="_blank" rel="noreferrer">
-              <img src="resources/img/ionize.png" alt="Ionize cybersecurity tools" />
-              <span class="thumb-overlay">
-                <span class="summary">
-                  Assisted in penetration testing and vulnerability analysis across multi-OS environments, applying
-                  Wireshark, Kali Linux, and Python tools.
-                </span>
-                
-              </span>
-            </a>
-          </article>
-        </li>
-
-        <li class="tl-item">
-          <span class="tl-dot" aria-hidden="true"></span>
-
-          <div class="tl-time">
-            <div class="date">Mar 2018 - Sep 2019</div>
-            <div class="place">Canberra, ACT</div>
-          </div>
-
-          <article class="tl-card">
-            <h3>Questacon - Gallery Assistant</h3>
-            <a class="thumb" href="https://www.questacon.edu.au" target="_blank" rel="noreferrer">
-              <img src="resources/img/questacon.png" alt="Questacon gallery engagement" />
-              <span class="thumb-overlay">
-                <span class="summary">
-                  Supported public science engagement and safety operations, applying APS standards while enhancing
-                  visitor experience in exhibitions.
-                </span>
-                
-              </span>
-            </a>
-          </article>
-        </li>
-      </ul>
-    </section>
-
-    <section id="skills" style="height:100vh"></section>
-    <section id="projects" style="height:100vh"></section>
-    <section id="about" style="height:100vh"></section>
-
-    <script>
-      const dots = [...document.querySelectorAll(".dots .dot")];
-      const sections = ["home", "skills", "projects", "about"].map((id) => document.getElementById(id));
-
-      const io = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((e) => {
-            if (e.isIntersecting) {
-              dots.forEach((d) => d.removeAttribute("aria-current"));
-              const idx = sections.indexOf(e.target);
-              if (idx >= 0) dots[idx].setAttribute("aria-current", "true");
-            }
-          });
-        },
-        { threshold: 0.6 }
-      );
-
-      sections.forEach((s) => io.observe(s));
-    </script>
+    <script src="resources/js/main.js"></script>
   </body>
 </html>
