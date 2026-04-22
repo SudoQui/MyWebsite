@@ -987,6 +987,13 @@ a {
   display: flex;
   gap: 28px;
   z-index: 3;
+  transition:
+    transform 0.24s ease,
+    bottom 0.24s ease,
+    background 0.24s ease,
+    border-color 0.24s ease,
+    box-shadow 0.24s ease,
+    padding 0.24s ease;
 }
 
 .tab {
@@ -994,11 +1001,30 @@ a {
   letter-spacing: 0.29em;
   text-transform: uppercase;
   color: #bdd0e3;
-  transition: color 0.22s ease;
+  transition: color 0.22s ease, opacity 0.22s ease;
 }
 
 .tab:hover {
   color: #f0f7ff;
+}
+
+.tab.active {
+  color: #f0f7ff;
+}
+
+.tabs.is-sticky {
+  position: fixed;
+  top: 12px;
+  bottom: auto;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 14px;
+  border: 1px solid rgba(157, 185, 220, 0.34);
+  border-radius: 999px;
+  background: rgba(8, 14, 22, 0.84);
+  backdrop-filter: blur(8px);
+  box-shadow: var(--shadow-md);
+  z-index: 30;
 }
 
 .dots {
@@ -1425,6 +1451,11 @@ a {
     right: 12px;
   }
 
+  .tabs.is-sticky {
+    top: 8px;
+    padding: 9px 11px;
+  }
+
   .timeline {
     padding: 60px 0 72px;
   }
@@ -1495,6 +1526,13 @@ a {
     justify-content: center;
     width: calc(100% - 24px);
     gap: 10px 14px;
+  }
+
+  .tabs.is-sticky {
+    width: calc(100% - 16px);
+    gap: 8px 12px;
+    top: 6px;
+    padding: 8px 10px;
   }
 
   .dots {

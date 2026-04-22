@@ -1,6 +1,9 @@
 const siteHeader = document.querySelector('.site-header');
 const menuToggle = document.querySelector('.menu-toggle');
 const navLinks = [...document.querySelectorAll('.primary-nav a')];
+const tabLinks = [...document.querySelectorAll('.tabs .tab')];
+const heroSection = document.getElementById('home');
+const heroTabs = document.querySelector('.tabs');
 const revealItems = [...document.querySelectorAll('.reveal')];
 const counterItems = [...document.querySelectorAll('[data-counter]')];
 const filterButtons = [...document.querySelectorAll('.filter-btn')];
@@ -87,7 +90,9 @@ if (counterItems.length > 0) {
 }
 
 const sections = [...document.querySelectorAll('main section[id]')];
-if (sections.length > 0 && navLinks.length > 0) {
+const sectionNavLinks = [...navLinks, ...tabLinks];
+
+if (sections.length > 0 && sectionNavLinks.length > 0) {
   const activeSectionObserver = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
@@ -96,7 +101,7 @@ if (sections.length > 0 && navLinks.length > 0) {
         }
 
         const id = entry.target.getAttribute('id');
-        navLinks.forEach((link) => {
+        sectionNavLinks.forEach((link) => {
           const href = link.getAttribute('href');
           link.classList.toggle('active', href === `#${id}`);
         });
@@ -106,6 +111,19 @@ if (sections.length > 0 && navLinks.length > 0) {
   );
 
   sections.forEach((section) => activeSectionObserver.observe(section));
+}
+
+if (heroSection && heroTabs) {
+  const updateStickyTabs = () => {
+    const heroRect = heroSection.getBoundingClientRect();
+    const shouldStick = heroRect.bottom <= 120;
+    heroTabs.classList.toggle('is-sticky', shouldStick);
+    document.body.classList.toggle('tabs-sticky', shouldStick);
+  };
+
+  window.addEventListener('scroll', updateStickyTabs, { passive: true });
+  window.addEventListener('resize', updateStickyTabs);
+  updateStickyTabs();
 }
 
 const dotLinks = [...document.querySelectorAll('.dots .dot')];
