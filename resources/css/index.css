@@ -950,7 +950,7 @@ a {
 .avatar {
   position: relative;
   z-index: 3;
-  width: min(42vw, 420px);
+  width: min(39vw, 280px);
   aspect-ratio: 1 / 1;
   border-radius: 50%;
   overflow: hidden;
@@ -1216,6 +1216,10 @@ a {
   transform: rotate(45deg);
 }
 
+.thumb img.uc-image-left {
+  object-position: left center !important;
+}
+
 .projects .tag-row {
   display: none;
 }
@@ -1396,7 +1400,7 @@ a {
   }
 
   .avatar {
-    width: min(68vw, 320px);
+    width: min(64vw, 300px);
   }
 
   .subtitle {
