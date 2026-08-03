@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+<title id="title">Sawaali project placeholder</title><desc id="desc">Replace this artwork with final project screenshots or photography.</desc>
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0d2439"/><stop offset="1" stop-color="#07111d"/></linearGradient><linearGradient id="accent" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#63d4ff"/><stop offset="1" stop-color="#72f0c2"/></linearGradient><pattern id="grid" width="64" height="64" patternUnits="userSpaceOnUse"><path d="M64 0H0V64" fill="none" stroke="#9ebee2" stroke-opacity=".08"/></pattern></defs>
+<rect width="1600" height="900" fill="url(#bg)"/><rect width="1600" height="900" fill="url(#grid)"/>
+<circle cx="1320" cy="80" r="360" fill="#63d4ff" opacity=".06"/><circle cx="180" cy="830" r="330" fill="#72f0c2" opacity=".05"/>
+<rect x="100" y="100" width="1400" height="700" rx="42" fill="none" stroke="#9ebee2" stroke-opacity=".24" stroke-width="2"/>
+<rect x="140" y="142" width="170" height="12" rx="6" fill="url(#accent)"/>
+<text x="140" y="350" fill="#eef5fc" font-family="Arial, Helvetica, sans-serif" font-size="112" font-weight="700">Sawaali</text>
+<text x="145" y="430" fill="#63d4ff" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700" letter-spacing="7">REAL TIME EVENT Q&A</text>
+<text x="145" y="650" fill="#a9bad0" font-family="Arial, Helvetica, sans-serif" font-size="28">IMAGE PLACEHOLDER • REPLACE THIS SVG WHEN FINAL MEDIA IS READY</text>
+<rect x="145" y="705" width="520" height="58" rx="29" fill="#ffffff" fill-opacity=".035" stroke="#9ebee2" stroke-opacity=".28"/>
+<text x="175" y="743" fill="#72f0c2" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" letter-spacing="2">NEXT.JS • SUPABASE</text>
+<g transform="translate(1210 565)" fill="none" stroke="url(#accent)" stroke-width="10" opacity=".9"><path d="M0 110 105 0l105 110-105 110Z"/><circle cx="105" cy="110" r="52"/><path d="M105 35v150M30 110h150"/></g>
+</svg>

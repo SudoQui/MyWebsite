@@ -1,221 +1,157 @@
-const siteHeader = document.querySelector('.site-header');
 const menuToggle = document.querySelector('.menu-toggle');
+const primaryNav = document.querySelector('.primary-nav');
 const navLinks = [...document.querySelectorAll('.primary-nav a')];
-const tabLinks = [...document.querySelectorAll('.tabs .tab')];
-const heroSection = document.getElementById('home');
-const heroTabs = document.querySelector('.tabs');
 const revealItems = [...document.querySelectorAll('.reveal')];
 const counterItems = [...document.querySelectorAll('[data-counter]')];
-const filterButtons = [...document.querySelectorAll('.filter-btn')];
-const projectCards = [...document.querySelectorAll('.project-card')];
-const emptyState = document.getElementById('empty-project-state');
-const yearTarget = document.getElementById('year');
+const projectGrid = document.getElementById('projects-grid');
+const projectFilterButtons = [...document.querySelectorAll('.filter-btn')];
+const emptyProjectState = document.getElementById('empty-project-state');
 
-if (yearTarget) {
-  yearTarget.textContent = String(new Date().getFullYear());
-}
+if (menuToggle && primaryNav) {
+  const closeMenu = () => {
+    primaryNav.classList.remove('open');
+    document.body.classList.remove('nav-open');
+    menuToggle.setAttribute('aria-expanded', 'false');
+  };
 
-if (menuToggle && siteHeader) {
   menuToggle.addEventListener('click', () => {
-    const isOpen = siteHeader.classList.toggle('nav-open');
+    const isOpen = primaryNav.classList.toggle('open');
+    document.body.classList.toggle('nav-open', isOpen);
     menuToggle.setAttribute('aria-expanded', String(isOpen));
   });
 
-  navLinks.forEach((link) => {
-    link.addEventListener('click', () => {
-      siteHeader.classList.remove('nav-open');
-      menuToggle.setAttribute('aria-expanded', 'false');
-    });
+  navLinks.forEach((link) => link.addEventListener('click', closeMenu));
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 820) closeMenu();
   });
 }
 
-if (revealItems.length > 0) {
+if ('IntersectionObserver' in window) {
   const revealObserver = new IntersectionObserver(
     (entries, observer) => {
       entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('in-view');
-          observer.unobserve(entry.target);
-        }
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
       });
     },
-    { threshold: 0.15, rootMargin: '0px 0px -8% 0px' }
+    { threshold: 0.12 }
   );
 
   revealItems.forEach((item) => revealObserver.observe(item));
+} else {
+  revealItems.forEach((item) => item.classList.add('visible'));
 }
 
 if (counterItems.length > 0) {
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  const runCounter = (el) => {
-    const targetValue = Number(el.dataset.counter);
-    if (!Number.isFinite(targetValue)) {
-      return;
-    }
-
-    if (prefersReducedMotion) {
-      el.textContent = String(targetValue);
-      return;
-    }
-
-    const duration = 1200;
+  const animateCounter = (element) => {
+    const target = Number(element.dataset.counter || 0);
+    const duration = 900;
     const start = performance.now();
 
-    const frame = (now) => {
+    const update = (now) => {
       const progress = Math.min((now - start) / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
-      el.textContent = String(Math.round(targetValue * eased));
-      if (progress < 1) {
-        requestAnimationFrame(frame);
-      }
+      element.textContent = Math.round(target * eased).toLocaleString('en-AU');
+      if (progress < 1) requestAnimationFrame(update);
     };
 
-    requestAnimationFrame(frame);
+    requestAnimationFrame(update);
   };
 
-  const counterObserver = new IntersectionObserver(
-    (entries, observer) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          runCounter(entry.target);
+  if ('IntersectionObserver' in window) {
+    const counterObserver = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          animateCounter(entry.target);
           observer.unobserve(entry.target);
-        }
-      });
-    },
-    { threshold: 0.5 }
-  );
-
-  counterItems.forEach((item) => counterObserver.observe(item));
+        });
+      },
+      { threshold: 0.6 }
+    );
+    counterItems.forEach((counter) => counterObserver.observe(counter));
+  } else {
+    counterItems.forEach(animateCounter);
+  }
 }
 
 const sections = [...document.querySelectorAll('main section[id]')];
-const sectionNavLinks = [...navLinks, ...tabLinks];
-
-if (sections.length > 0 && sectionNavLinks.length > 0) {
+if ('IntersectionObserver' in window && sections.length > 0) {
   const activeSectionObserver = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
-        if (!entry.isIntersecting) {
-          return;
-        }
-
-        const id = entry.target.getAttribute('id');
-        sectionNavLinks.forEach((link) => {
-          const href = link.getAttribute('href');
-          link.classList.toggle('active', href === `#${id}`);
+        if (!entry.isIntersecting) return;
+        navLinks.forEach((link) => {
+          link.classList.toggle('active', link.getAttribute('href') === `#${entry.target.id}`);
         });
       });
     },
-    { threshold: 0.5, rootMargin: '-20% 0px -30% 0px' }
+    { rootMargin: '-35% 0px -55% 0px', threshold: 0 }
   );
 
   sections.forEach((section) => activeSectionObserver.observe(section));
 }
 
-if (heroSection && heroTabs) {
-  const updateStickyTabs = () => {
-    const heroRect = heroSection.getBoundingClientRect();
-    const shouldStick = heroRect.bottom <= 120;
-    heroTabs.classList.toggle('is-sticky', shouldStick);
-    document.body.classList.toggle('tabs-sticky', shouldStick);
-  };
+const escapeHtml = (value) =>
+  String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
 
-  window.addEventListener('scroll', updateStickyTabs, { passive: true });
-  window.addEventListener('resize', updateStickyTabs);
-  updateStickyTabs();
-}
+const renderProjects = () => {
+  if (!projectGrid || !Array.isArray(window.PORTFOLIO_PROJECTS)) return;
 
-const dotLinks = [...document.querySelectorAll('.dots .dot')];
-if (sections.length > 0 && dotLinks.length > 0) {
-  const dotSectionObserver = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) {
-          return;
-        }
+  projectGrid.innerHTML = window.PORTFOLIO_PROJECTS.map((project) => {
+    const filters = project.filters.join(' ');
+    const tags = project.tools.slice(0, 4).map((tool) => `<span>${escapeHtml(tool)}</span>`).join('');
+    const studioLabel = project.studio ? '<span class="project-badge">Built through SudoLabs</span>' : `<span class="project-badge">${escapeHtml(project.badge)}</span>`;
 
-        const currentId = entry.target.getAttribute('id');
-        dotLinks.forEach((dot) => {
-          const targetId = (dot.getAttribute('href') || '').replace('#', '');
-          if (targetId === currentId) {
-            dot.setAttribute('aria-current', 'true');
-            return;
-          }
-          dot.removeAttribute('aria-current');
-        });
-      });
-    },
-    { threshold: 0.55, rootMargin: '-20% 0px -30% 0px' }
-  );
-
-  sections.forEach((section) => dotSectionObserver.observe(section));
-}
-
-const matchesFilter = (card, filterName) => {
-  if (filterName === 'all') {
-    return true;
-  }
-
-  const cardFilters = card.dataset.filters ? card.dataset.filters.split(/\s+/) : [];
-  return cardFilters.includes(filterName);
+    return `
+      <article class="project-card reveal visible" data-filters="${escapeHtml(filters)}">
+        <a class="project-media" href="project.html?id=${encodeURIComponent(project.id)}" aria-label="View ${escapeHtml(project.title)} details">
+          <img src="${escapeHtml(project.image)}" alt="Placeholder artwork for ${escapeHtml(project.title)}" width="1600" height="900" loading="lazy" />
+        </a>
+        <div class="project-content">
+          ${studioLabel}
+          <h3>${escapeHtml(project.title)}</h3>
+          <p>${escapeHtml(project.summary)}</p>
+          <div class="tag-row">${tags}</div>
+          <a class="project-link" href="project.html?id=${encodeURIComponent(project.id)}">View case study</a>
+        </div>
+      </article>`;
+  }).join('');
 };
 
-const applyProjectFilter = (filterName) => {
+const filterProjects = (filter) => {
+  if (!projectGrid) return;
+  const cards = [...projectGrid.querySelectorAll('.project-card')];
   let visibleCount = 0;
 
-  projectCards.forEach((card) => {
-    const shouldShow = matchesFilter(card, filterName);
-
-    if (shouldShow) {
-      card.hidden = false;
-      card.classList.remove('filter-out');
-      card.classList.remove('filter-in');
-      // Restart animation for smooth transitions between filters.
-      void card.offsetWidth;
-      card.classList.add('filter-in');
-      visibleCount += 1;
-      return;
-    }
-
-    card.classList.remove('filter-in');
-    card.classList.add('filter-out');
-
-    window.setTimeout(() => {
-      if (card.classList.contains('filter-out')) {
-        card.hidden = true;
-      }
-    }, 210);
+  cards.forEach((card) => {
+    const matches = filter === 'all' || card.dataset.filters.split(' ').includes(filter);
+    card.hidden = !matches;
+    if (matches) visibleCount += 1;
   });
 
-  if (emptyState) {
-    emptyState.hidden = visibleCount > 0;
-  }
+  if (emptyProjectState) emptyProjectState.hidden = visibleCount !== 0;
 };
 
-if (filterButtons.length > 0 && projectCards.length > 0) {
-  filterButtons.forEach((button) => {
-    button.addEventListener('click', () => {
-      const selectedFilter = button.dataset.filter;
-      if (!selectedFilter) {
-        return;
-      }
+renderProjects();
 
-      filterButtons.forEach((btn) => {
-        const isActive = btn === button;
-        btn.classList.toggle('active', isActive);
-        btn.setAttribute('aria-pressed', String(isActive));
-      });
-
-      applyProjectFilter(selectedFilter);
+projectFilterButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    projectFilterButtons.forEach((candidate) => {
+      const isActive = candidate === button;
+      candidate.classList.toggle('active', isActive);
+      candidate.setAttribute('aria-pressed', String(isActive));
     });
+    filterProjects(button.dataset.filter || 'all');
   });
+});
 
-  projectCards.forEach((card) => {
-    card.addEventListener('animationend', () => {
-      card.classList.remove('filter-in');
-    });
-  });
-
-  applyProjectFilter('all');
-}
+const yearNode = document.getElementById('year');
+if (yearNode) yearNode.textContent = String(new Date().getFullYear());

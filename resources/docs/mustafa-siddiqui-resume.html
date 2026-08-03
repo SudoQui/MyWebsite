@@ -1,207 +1,104 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-AU">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Mustafa Siddiqui | Resume Preview</title>
+    <title>Mustafa Siddiqui | Resume</title>
     <style>
-      :root {
-        --ink: #0f1724;
-        --muted: #4a6078;
-        --line: #c8d6e4;
-        --accent: #0f7ea6;
-        --bg: #f2f6fa;
-      }
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        margin: 0;
-        font-family: "Segoe UI", Tahoma, sans-serif;
-        color: var(--ink);
-        background: var(--bg);
-      }
-      .resume {
-        width: min(860px, calc(100% - 24px));
-        margin: 20px auto;
-        background: #fff;
-        border: 1px solid var(--line);
-        box-shadow: 0 10px 24px rgba(12, 20, 33, 0.14);
-        border-radius: 14px;
-        overflow: hidden;
-      }
-      .head {
-        padding: 24px;
-        background: linear-gradient(130deg, #d7eaf8, #ecf6ff);
-        border-bottom: 1px solid var(--line);
-      }
-      h1 {
-        margin: 0;
-        font-size: 1.8rem;
-      }
-      .subtitle {
-        margin-top: 4px;
-        color: var(--muted);
-      }
-      .contact {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 10px;
-        color: #2d4560;
-        font-size: 0.9rem;
-      }
-      .content {
-        padding: 22px 24px 26px;
-      }
-      h2 {
-        margin: 0 0 8px;
-        font-size: 1rem;
-        color: var(--accent);
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-      }
-      section + section {
-        margin-top: 18px;
-      }
-      p,
-      li {
-        margin: 0;
-        color: #2b425c;
-        line-height: 1.5;
-      }
-      ul {
-        margin: 0;
-        padding-left: 18px;
-        display: grid;
-        gap: 6px;
-      }
-      .role {
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        padding: 10px;
-      }
-      .role + .role {
-        margin-top: 8px;
-      }
-      .role-head {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        gap: 6px;
-        font-weight: 600;
-      }
-      .muted {
-        color: var(--muted);
-      }
-      .actions {
-        width: min(860px, calc(100% - 24px));
-        margin: 0 auto 18px;
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-      }
-      button,
-      a {
-        border: 1px solid #9ab2c8;
-        border-radius: 999px;
-        padding: 9px 14px;
-        text-decoration: none;
-        color: #1d3a56;
-        background: #fff;
-        font-weight: 600;
-        cursor: pointer;
-      }
-      @media print {
-        .actions {
-          display: none;
-        }
-        body {
-          background: #fff;
-        }
-        .resume {
-          margin: 0;
-          width: 100%;
-          border: 0;
-          box-shadow: none;
-          border-radius: 0;
-        }
-      }
+      :root { color-scheme: light; --ink:#17212b; --muted:#536170; --line:#c7d0d9; --accent:#075c4c; }
+      * { box-sizing:border-box; }
+      body { margin:0; background:#eef1f4; color:var(--ink); font-family:Arial, Helvetica, sans-serif; line-height:1.42; }
+      main { width:min(920px, calc(100% - 28px)); margin:28px auto; padding:38px 44px; background:white; box-shadow:0 14px 40px rgba(25,39,52,.13); }
+      h1 { margin:0; text-align:center; font-family:Georgia, serif; font-size:2.35rem; }
+      .contact { text-align:center; margin:7px 0 22px; color:var(--muted); font-size:.9rem; }
+      .contact a { color:inherit; }
+      h2 { margin:24px 0 10px; padding-bottom:4px; border-bottom:2px solid var(--ink); font-family:Georgia, serif; font-size:1.05rem; text-transform:uppercase; }
+      .row { display:flex; justify-content:space-between; gap:20px; align-items:baseline; }
+      .row h3 { margin:0; font-size:1rem; }
+      .date { color:var(--muted); white-space:nowrap; font-style:italic; font-size:.87rem; }
+      .role { margin:2px 0 6px; color:var(--muted); font-style:italic; font-size:.9rem; }
+      ul { margin:6px 0 15px; padding-left:20px; }
+      li { margin:4px 0; font-size:.9rem; }
+      p { margin:5px 0; font-size:.9rem; }
+      .skills strong { display:inline-block; min-width:170px; }
+      .actions { width:min(920px, calc(100% - 28px)); margin:18px auto 0; display:flex; justify-content:space-between; gap:12px; }
+      .actions a, .actions button { padding:9px 13px; border:1px solid #9aa7b2; border-radius:999px; background:white; color:var(--ink); font:inherit; cursor:pointer; text-decoration:none; }
+      @media print { body{background:white;} .actions{display:none;} main{width:100%; margin:0; padding:18px 24px; box-shadow:none;} }
+      @media (max-width:650px){ main{padding:26px 20px;} .row{display:block;} .date{display:block;margin-top:2px;} .skills strong{display:block;} }
     </style>
   </head>
   <body>
-    <div class="actions">
-      <button type="button" onclick="window.print()">Print or Save as PDF</button>
-      <a href="../../index.html#about">Back to Portfolio</a>
-    </div>
+    <div class="actions"><a href="../../index.html">Back to portfolio</a><button type="button" onclick="window.print()">Print or save as PDF</button></div>
+    <main>
+      <h1>Mustafa Siddiqui</h1>
+      <p class="contact">+61 0404 252 305 | <a href="mailto:Siddiqui.mm@outlook.com">Siddiqui.mm@outlook.com</a> | <a href="https://mustafa-siddiqui.com/">mustafa-siddiqui.com</a> | <a href="https://github.com/SudoQui">github.com/SudoQui</a></p>
 
-    <article class="resume">
-      <header class="head">
-        <h1>Mustafa Siddiqui</h1>
-        <p class="subtitle">Systems Engineer | AI Engineering | Robotics and Prototyping</p>
-        <div class="contact">
-          <span>Canberra, ACT</span>
-          <span>siddiqui.mm@outlook.com</span>
-          <span>linkedin.com</span>
-          <span>github.com</span>
-        </div>
-      </header>
+      <h2>Education</h2>
+      <div class="row"><h3>University of Canberra, Bachelor of Systems Engineering, Robotics and AI</h3><span class="date">Feb 2020 to Dec 2025</span></div>
+      <p><strong>GPA:</strong> 6.87 out of 7.0 | Dean's Award | Five Top 10 Faculty Rankings</p>
+      <p><strong>Relevant study:</strong> Pattern Recognition, Machine Learning, DSP, Robotics, Computer Vision, Data Structures and Algorithms</p>
 
-      <div class="content">
-        <section>
-          <h2>Profile</h2>
-          <p>
-            Systems engineer focused on practical products across software, AI, and robotics. Experienced in shipping
-            usable systems, integrating hardware with software, and improving reliability in real operating conditions.
-          </p>
-        </section>
+      <h2>Technical Skills</h2>
+      <p class="skills"><strong>Programming:</strong> Python, JavaScript, TypeScript, SQL, PowerShell, C++, MATLAB, HTML and CSS</p>
+      <p class="skills"><strong>Application and AI:</strong> React Native, Expo, Supabase, PostgreSQL, PyTorch, OpenCV, PaddleOCR, Ollama, LangChain and MCP</p>
+      <p class="skills"><strong>Systems and DevOps:</strong> Docker, Jenkins, Git, CI/CD, SharePoint, Power Automate, IIS, SQL Server, Active Directory, SCCM and SolidWorks</p>
 
-        <section>
-          <h2>Experience Highlights</h2>
-          <div class="role">
-            <div class="role-head">
-              <span>AI Engineer, Xaana AI</span>
-              <span class="muted">Mar 2025 - Present</span>
-            </div>
-            <ul>
-              <li>Developed OCR and document intelligence pipelines for production use.</li>
-              <li>Built data processing workflows and model deployment practices for secure environments.</li>
-            </ul>
-          </div>
+      <h2>Work Experience</h2>
+      <div class="row"><h3>DXC Technology, Graduate Engineering Consultant</h3><span class="date">Feb 2026 to Present</span></div>
+      <p class="role">Canberra, ACT</p>
+      <ul><li>Still here, still winning. Check back later.</li></ul>
 
-          <div class="role">
-            <div class="role-head">
-              <span>Robotics Research Assistant, University of Canberra</span>
-              <span class="muted">Aug 2024 - Present</span>
-            </div>
-            <ul>
-              <li>Designed and validated rehabilitation robotics prototypes.</li>
-              <li>Mentored students in DSP, controls, and kinematics.</li>
-            </ul>
-          </div>
+      <div class="row"><h3>MACT, Founder and Lead Engineer</h3><span class="date">Jun 2026 to Present</span></div>
+      <p class="role">React Native, Expo, TypeScript, Supabase, PostgreSQL, MapLibre, Ollama and MCP</p>
+      <ul>
+        <li>Founded and built a production iOS and Android community application, owning product strategy, architecture, development, testing, store releases and market delivery.</li>
+        <li>Led a four person team, ran stakeholder meetings and grew the platform to more than 500 community users.</li>
+        <li>Built a local AI operations sandbox using Ollama, Model Context Protocol servers and isolated agent workflows.</li>
+      </ul>
 
-          <div class="role">
-            <div class="role-head">
-              <span>Endpoint Engineer, Unisys</span>
-              <span class="muted">Aug 2021 - Mar 2025</span>
-            </div>
-            <ul>
-              <li>Automated endpoint workflows and improved system security compliance.</li>
-              <li>Built operational support solutions for government clients.</li>
-            </ul>
-          </div>
-        </section>
+      <div class="row"><h3>Xaana.AI, Artificial Intelligence Engineer</h3><span class="date">Mar 2025 to Dec 2025</span></div>
+      <ul>
+        <li>Built and deployed OCR and computer vision pipelines that reduced invoice handling time by approximately 40 percent.</li>
+        <li>Established Jenkins and Docker based MLOps workflows for consistent testing and deployment.</li>
+        <li>Created an internal generative AI assistant for research and document review.</li>
+      </ul>
 
-        <section>
-          <h2>Skills</h2>
-          <ul>
-            <li>AI Engineering: Computer vision, OCR, ML workflows, MLOps, model deployment.</li>
-            <li>Software: Python, JavaScript, TypeScript, SQL, REST APIs, frontend and backend development.</li>
-            <li>Robotics and Mechanical: SolidWorks, Fusion 360, prototyping, embedded integration, control concepts.</li>
-            <li>Tools: Docker, Jenkins, GitHub, Active Directory, SCCM, Raspberry Pi, Arduino.</li>
-          </ul>
-        </section>
-      </div>
-    </article>
+      <div class="row"><h3>University of Canberra Robotics, Research Assistant and Tutor</h3><span class="date">Aug 2024 to Present</span></div>
+      <ul>
+        <li>Designed SolidWorks components for robotic rehabilitation devices.</li>
+        <li>Delivered DSP, control and robotics teaching while mentoring more than 100 students.</li>
+        <li>Supported simulated machine learning based robotic control prototypes.</li>
+      </ul>
+
+      <div class="row"><h3>Unisys, Endpoint Engineer</h3><span class="date">Aug 2021 to Mar 2025</span></div>
+      <ul>
+        <li>Resolved complex incidents across secure systems and strict service levels.</li>
+        <li>Automated configuration, deployment and reporting using PowerShell, SCCM, Ivanti and SQL.</li>
+        <li>Strengthened endpoint security through antivirus, USB and application control policies.</li>
+      </ul>
+
+      <div class="row"><h3>Nova Systems, Systems Engineering Intern</h3><span class="date">Nov 2020 to Feb 2021</span></div>
+      <ul>
+        <li>Contributed to rover system design, telemetry, sensing, mechanical prototyping and verification focused documentation.</li>
+      </ul>
+
+      <div class="row"><h3>Ionize, Cybersecurity Intern</h3><span class="date">Mar 2018 to Apr 2018</span></div>
+      <ul><li>Assisted with secure networks, vulnerability testing and remediation across multiple operating systems.</li></ul>
+
+      <div class="row"><h3>Questacon, Gallery Assistant</h3><span class="date">Mar 2018 to Sep 2019</span></div>
+      <ul><li>Supported science communication, public safety and visitor experiences within formal operating procedures.</li></ul>
+
+      <h2>Selected Projects</h2>
+      <p><strong>MotorHUD:</strong> Helmet mounted navigation and speed display integrating Android, ESP32, Bluetooth, Raspberry Pi, computer vision and OLED hardware.</p>
+      <p><strong>Sawaali:</strong> Realtime moderated university Q and A platform using Next.js, TypeScript, Supabase and Vercel.</p>
+      <p><strong>Uni Pen Pals:</strong> Student matching, messaging and notification platform designed for safe study support and community.</p>
+
+      <h2>Leadership</h2>
+      <div class="row"><h3>UC IT Student Association, President</h3><span class="date">Nov 2020 to Present</span></div>
+      <ul>
+        <li>Led student programs focused on technical growth, career readiness and academic success.</li>
+        <li>Organised more than 15 technology events with faculty and industry mentors.</li>
+      </ul>
+    </main>
   </body>
 </html>
