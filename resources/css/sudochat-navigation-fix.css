@@ -1,0 +1,4 @@
+.page-front { pointer-events: auto; }
+.page-back { pointer-events: none; }
+.sudochat-shell[data-view="engine"] .page-front { pointer-events: none; }
+.sudochat-shell[data-view="engine"] .page-back { pointer-events: auto; }
