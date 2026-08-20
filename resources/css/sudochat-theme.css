@@ -1,0 +1,142 @@
+:root {
+  --bg: #10151b;
+  --bg-soft: #151b22;
+  --panel: rgba(24, 30, 37, 0.92);
+  --panel-solid: #181e25;
+  --panel-light: #222a33;
+  --line: rgba(225, 216, 198, 0.22);
+  --line-strong: rgba(225, 216, 198, 0.42);
+  --text: #f4f0e8;
+  --muted: #b9b4aa;
+  --accent: #c9aa6d;
+  --accent-2: #9d5964;
+  --warm: #e1d1b2;
+  --court-line: rgba(157, 89, 100, 0.58);
+  --court-wash: rgba(157, 89, 100, 0.12);
+}
+
+body {
+  background:
+    radial-gradient(900px 620px at 85% -5%, rgba(157, 89, 100, 0.14), transparent 68%),
+    radial-gradient(820px 600px at 8% 18%, rgba(201, 170, 109, 0.08), transparent 67%),
+    var(--bg);
+}
+
+button:focus-visible,
+a:focus-visible,
+textarea:focus-visible {
+  outline-color: rgba(201, 170, 109, 0.82);
+}
+
+.site-header {
+  background: rgba(15, 20, 26, 0.92);
+  border-color: rgba(225, 216, 198, 0.22);
+}
+
+.brand-mark {
+  color: #17130d;
+  background: linear-gradient(135deg, var(--warm), var(--accent));
+}
+
+.sudochat-shell {
+  background: rgba(24, 30, 37, 0.9);
+}
+
+.sudochat-shell::before {
+  background: linear-gradient(90deg, var(--accent-2), var(--warm), var(--accent));
+}
+
+.landing-kicker {
+  color: var(--accent);
+}
+
+.prompt-shortcuts button,
+.challenge-row button {
+  background: rgba(16, 21, 27, 0.58);
+}
+
+.prompt-shortcuts button:hover,
+.challenge-row button:hover {
+  background: rgba(201, 170, 109, 0.1);
+}
+
+.prompt-shortcuts button:nth-child(2) {
+  border-color: var(--court-line);
+  background: var(--court-wash);
+}
+
+.trust-strip span::before {
+  background: var(--accent);
+}
+
+.message {
+  background: rgba(16, 21, 27, 0.62);
+}
+
+.message.user {
+  border-color: rgba(201, 170, 109, 0.42);
+  background: rgba(201, 170, 109, 0.1);
+}
+
+.message .message-label,
+.panel-kicker,
+.text-link,
+.eyebrow {
+  color: var(--accent);
+}
+
+.composer {
+  background: rgba(14, 18, 23, 0.84);
+}
+
+.composer:focus-within {
+  border-color: rgba(201, 170, 109, 0.7);
+}
+
+.composer textarea::placeholder,
+.composer-note {
+  color: #918c83;
+}
+
+.composer button {
+  background: var(--accent);
+  color: #17130d;
+}
+
+.composer button:hover {
+  background: var(--warm);
+}
+
+.arch-node {
+  background: rgba(16, 21, 27, 0.66);
+}
+
+.arch-node:hover {
+  background: rgba(40, 45, 51, 0.9);
+}
+
+.arch-node.mvp span {
+  background: rgba(201, 170, 109, 0.14);
+  color: var(--accent);
+}
+
+.arch-node.final span {
+  background: rgba(157, 89, 100, 0.14);
+  color: #d9a8af;
+}
+
+.component-panel,
+.court-research-card,
+.timeline-card,
+.responsibility-note {
+  background: rgba(16, 21, 27, 0.56);
+}
+
+.court-focus-note,
+.responsibility-note {
+  border-left-color: var(--accent-2);
+}
+
+.court-research-card {
+  border-top-color: var(--court-line);
+}
