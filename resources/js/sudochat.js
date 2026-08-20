@@ -6,6 +6,8 @@
   };
 
   const shell = document.getElementById("sudochat-shell");
+  const chatView = document.getElementById("chat-view");
+  const engineView = document.getElementById("engine-view");
   const form = document.getElementById("chat-form");
   const input = document.getElementById("chat-input");
   const sendButton = document.getElementById("send-button");
@@ -27,7 +29,15 @@
   };
 
   function setView(mode) {
-    shell.dataset.view = mode === "engine" ? "engine" : "chat";
+    const showEngine = mode === "engine";
+    shell.dataset.view = showEngine ? "engine" : "chat";
+
+    if (chatView && engineView) {
+      chatView.style.pointerEvents = showEngine ? "none" : "auto";
+      engineView.style.pointerEvents = showEngine ? "auto" : "none";
+      chatView.setAttribute("aria-hidden", String(showEngine));
+      engineView.setAttribute("aria-hidden", String(!showEngine));
+    }
   }
 
   function setPrompt(text) {
@@ -38,7 +48,12 @@
     input.setSelectionRange(input.value.length, input.value.length);
   }
 
-  modeButtons.forEach((button) => button.addEventListener("click", () => setView(button.dataset.mode || "chat")));
+  modeButtons.forEach((button) => button.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setView(button.dataset.mode || "chat");
+  }));
+
   promptButtons.forEach((button) => button.addEventListener("click", () => setPrompt(button.dataset.prompt || "")));
   componentButtons.forEach((button) => button.addEventListener("click", () => {
     componentSummary.textContent = architectureDetails[button.dataset.component] || "Select a component to inspect its responsibility.";
@@ -57,6 +72,7 @@
     const question = input.value.trim();
     if (!question) return;
 
+    setView("chat");
     shell.classList.add("has-chat");
     addMessage("user", "You", question);
     input.value = "";
@@ -156,6 +172,7 @@
     }
   }
 
+  setView(shell.dataset.view || "chat");
   resizeInput();
   loadGitHubTimeline();
 })();
