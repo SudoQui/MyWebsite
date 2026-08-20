@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-labelledby="title desc">
+  <title id="title">Headshot placeholder</title>
+  <desc id="desc">Neutral portrait placeholder to be replaced with Mustafa Siddiqui's headshot.</desc>
+  <rect width="240" height="240" rx="38" fill="#f0ece4"/>
+  <circle cx="120" cy="88" r="46" fill="#c8c2b7"/>
+  <path d="M45 218c9-57 37-86 75-86s66 29 75 86" fill="#a8a196"/>
+  <rect x="28" y="28" width="184" height="184" rx="28" fill="none" stroke="#7d8f37" stroke-opacity=".35" stroke-width="3"/>
+</svg>

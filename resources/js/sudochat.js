@@ -10,6 +10,8 @@
   const sendButton = document.getElementById("send-button");
   const landing = document.getElementById("landing-state");
   const conversation = document.getElementById("conversation");
+  const shell = document.getElementById("sudochat-shell");
+  const stage = shell.querySelector(".flip-stage");
   const chatView = document.getElementById("chat-view");
   const engineView = document.getElementById("engine-view");
   const modeButtons = document.querySelectorAll("[data-mode]");
@@ -72,22 +74,35 @@
     input.setSelectionRange(input.value.length, input.value.length);
   }
 
+  function syncStageHeight(mode = shell.dataset.view || "chat") {
+    const face = mode === "engine" ? engineView : chatView;
+    requestAnimationFrame(() => {
+      stage.style.height = `${face.scrollHeight}px`;
+    });
+  }
+
+  function setView(mode) {
+    const isEngine = mode === "engine";
+    shell.dataset.view = isEngine ? "engine" : "chat";
+    modeButtons.forEach((item) => {
+      const active = item.dataset.mode === mode;
+      item.classList.toggle("active", active);
+      item.setAttribute("aria-pressed", String(active));
+    });
+    syncStageHeight(mode);
+  }
+
   promptButtons.forEach((button) => {
-    button.addEventListener("click", () => setPrompt(button.dataset.prompt));
+    button.addEventListener("click", () => {
+      setView("chat");
+      setPrompt(button.dataset.prompt || "");
+    });
   });
 
   modeButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const mode = button.dataset.mode;
-      modeButtons.forEach((item) => {
-        const active = item === button;
-        item.classList.toggle("is-active", active);
-        item.setAttribute("aria-pressed", String(active));
-      });
-
-      const showChat = mode === "chat";
-      chatView.hidden = !showChat;
-      engineView.hidden = showChat;
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      setView(button.dataset.mode || "chat");
     });
   });
 
@@ -97,9 +112,10 @@
       if (!detail) return;
       componentPanel.innerHTML = `
         <p class="panel-kicker">${escapeHtml(detail.status)} architecture</p>
-        <h2>${escapeHtml(detail.title)}</h2>
+        <h3>${escapeHtml(detail.title)}</h3>
         <p>${escapeHtml(detail.body)}</p>
       `;
+      syncStageHeight("engine");
     });
   });
 
@@ -116,6 +132,7 @@
     const question = input.value.trim();
     if (!question) return;
 
+    setView("chat");
     collapseLanding();
     addMessage("user", "You", question);
     input.value = "";
@@ -127,7 +144,7 @@
         addMessage(
           "assistant",
           "SudoChat MVP",
-          "The custom interface is ready, but the live grounded Copilot backend has not been connected to this repository build yet. This fallback is deliberately transparent rather than pretending to be an AI response. Open Engine Room to inspect the planned architecture."
+          "The custom interface is ready, but the live grounded Copilot backend has not been connected to this repository build yet. This fallback is deliberately transparent rather than pretending to be an AI response. Flip to Engine Room to inspect the architecture behind the planned agent."
         );
         return;
       }
@@ -155,7 +172,7 @@
       addMessage(
         "assistant",
         "Service unavailable",
-        "The live agent could not be reached. The portfolio, Engine Room and public evidence remain available while the AI service is unavailable."
+        "The live agent could not be reached. The portfolio, evidence and Engine Room remain available while the AI service is unavailable."
       );
     } finally {
       setBusy(false);
@@ -166,6 +183,7 @@
   function collapseLanding() {
     landing.classList.add("is-collapsed");
     conversation.classList.add("is-active");
+    syncStageHeight("chat");
   }
 
   function addMessage(role, label, text, sources = []) {
@@ -186,6 +204,7 @@
       ${safeSources ? `<div class="source-list">${safeSources}</div>` : ""}
     `;
     conversation.appendChild(node);
+    syncStageHeight("chat");
     node.scrollIntoView({ behavior: "smooth", block: "end" });
   }
 
@@ -197,6 +216,7 @@
   function resizeInput() {
     input.style.height = "auto";
     input.style.height = `${Math.min(input.scrollHeight, 180)}px`;
+    syncStageHeight("chat");
   }
 
   function isAllowedUrl(value) {
@@ -272,8 +292,13 @@
       console.warn(error);
       start.textContent = "See GitHub history";
       latest.textContent = "See GitHub history";
+    } finally {
+      syncStageHeight(shell.dataset.view || "chat");
     }
   }
 
+  window.addEventListener("resize", () => syncStageHeight());
+  resizeInput();
+  syncStageHeight("chat");
   loadGitHubTimeline();
 })();
