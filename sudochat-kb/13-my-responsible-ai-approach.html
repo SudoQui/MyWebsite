@@ -1,0 +1,355 @@
+<!doctype html><html lang="en-AU"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="index,follow"><meta name="author" content="Mustafa Siddiqui"><meta name="description" content="First-person authored SudoChat evidence: How does Mustafa approach responsible AI?"><link rel="canonical" href="https://mustafa-siddiqui.com/sudochat-kb/13-my-responsible-ai-approach.html"><title>How do I approach responsible AI? | SudoChat Knowledge Base</title></head><body data-source-id="sudochat_mvp_13" data-perspective="first_person"><p><a href="./">SudoChat Knowledge Base</a> · <a href="../sudochat.html">SudoChat</a></p><p><strong>Authored evidence:</strong> This is my first-person source material. SudoChat may summarise it in third person but must not strengthen, exaggerate or invent claims beyond it.</p><pre style="white-space:pre-wrap;font-family:inherit"># 13. How do I approach responsible AI?
+
+**Author:** Mustafa Siddiqui  
+**Source type:** First-person authored response  
+**Canonical recruiter question:** How does Mustafa approach responsible AI?
+
+&gt; This source is intentionally written in my first-person perspective. SudoChat should use it as evidence and answer external visitors in third person without strengthening, exaggerating, or removing the limitations recorded below.
+
+## Direct answer
+I approach responsible AI as a governance and engineering discipline, not as a checklist added after a system is built. My core view is that AI systems should be designed to be fair, transparent, accountable, safe, reliable, privacy preserving and beneficial to the people who use or are affected by them.
+
+I also believe responsible AI requires more than configuring guardrails in a low code platform. To apply it properly, an engineer needs to understand how models behave, how data flows through the system, where bias and uncertainty can enter, how retrieval and permissions work, and how technical choices affect risk.
+
+## Evidence
+My responsible AI approach is built around five principles.
+
+### Fairness
+
+AI systems should be designed and evaluated so that they do not systematically disadvantage particular people or groups.
+
+I understand that fairness is not achieved simply by telling a model to “be unbiased.”
+
+Bias can enter through:
+
+* training data
+* source data
+* retrieval systems
+* labels and classifications
+* evaluation datasets
+* prompts and instructions
+* business rules
+* human decisions surrounding the system
+
+My approach is therefore to test for uneven outcomes, examine where those outcomes originate, and involve relevant subject matter experts when fairness depends on legal, social or operational context.
+
+In a Court environment, this principle would be especially important because an AI system should never create different standards of service or treatment for users based on irrelevant personal characteristics.
+
+### Transparency
+
+I believe users should know when they are interacting with AI and should have enough information to understand the role the AI is playing.
+
+Transparency can include:
+
+* clearly identifying AI generated content
+* showing the sources used to produce an answer
+* explaining the system&#x27;s limitations
+* distinguishing generated summaries from authoritative source material
+* making uncertainty visible
+* documenting what information the system can access
+* recording how important automated actions were produced
+
+For me, a fluent answer should never be mistaken for a verified answer simply because the interface makes it look authoritative.
+
+This is one reason I place strong emphasis on grounding and citations in projects such as SudoChat.
+
+### Accountability
+
+I believe humans must remain accountable for consequential outcomes.
+
+AI can assist with:
+
+* retrieving information
+* organising material
+* summarising
+* classification
+* drafting
+* identifying patterns
+* automating bounded workflows
+
+However, assigning a task to AI should not allow the organisation or individual responsible for the process to surrender accountability.
+
+For higher consequence systems, I would establish explicit human approval points and clearly define what the AI is authorised to do independently.
+
+My principle is simple:
+
+**AI can assist human judgement, but responsibility cannot be delegated to the model.**
+
+### Safety and reliability
+
+I believe an AI system should be treated as an engineered system with known failure modes rather than assumed to be reliable because it performs well in demonstrations.
+
+I would test areas such as:
+
+* hallucination
+* retrieval failure
+* incorrect citations
+* prompt injection
+* malicious inputs
+* conflicting sources
+* ambiguous questions
+* unavailable systems
+* tool execution failures
+* excessive agent autonomy
+* inappropriate refusal
+* inappropriate compliance
+* edge cases
+* performance degradation over time
+
+I am particularly interested in what happens when the system does **not** know the answer.
+
+A responsible AI architecture should have a safe failure mode.
+
+For example, an assistant should be capable of saying that it does not have sufficient evidence rather than manufacturing a plausible response.
+
+### Privacy
+
+I treat privacy as an architectural requirement.
+
+My research and experimentation with privacy preserving government chatbot architectures considered scenarios where citizens may unintentionally enter information such as:
+
+* Medicare numbers
+* Centrelink CRNs
+* addresses
+* banking details
+* personally identifiable information
+* other sensitive information
+
+A responsible design should not rely entirely on the user remembering what information is safe to disclose.
+
+Instead, I consider controls such as:
+
+* data minimisation
+* sensitive data detection
+* access control
+* redaction
+* restricted logging
+* encryption
+* retention limits
+* model and service boundaries
+* least privilege
+* controlled connectors
+* separation of sensitive information from unnecessary AI processing
+
+The objective is to reduce the amount of sensitive information exposed to the AI system in the first place.
+
+## Responsible AI requires engineering knowledge
+I do not believe responsible AI can be implemented solely through policy documents or drag and drop configuration.
+
+Platforms such as Copilot Studio can provide valuable governance and safety features, but an AI Technologist still needs to understand the system underneath those abstractions.
+
+For example, responsible design may require understanding:
+
+* model inputs and outputs
+* probability and uncertainty
+* embeddings
+* similarity search
+* retrieval
+* context windows
+* tokenisation
+* classification
+* model evaluation
+* precision and recall
+* false positives and false negatives
+* data distributions
+* bias
+* model drift
+* system architecture
+* identity and permissions
+* APIs and connectors
+* security boundaries
+
+My formal AI and systems engineering education gives me a foundation in these underlying concepts.
+
+This is important because different risks require different technical responses.
+
+If a retrieval system consistently returns irrelevant material, changing the conversational prompt may not solve the problem.
+
+If a classifier creates unacceptable false positives, the engineer needs to understand its evaluation metrics and decision thresholds.
+
+If an agent has excessive permissions, the solution is architectural rather than linguistic.
+
+If sensitive information is reaching an external model unnecessarily, the problem is in the data flow.
+
+Responsible AI therefore requires understanding **where the risk actually exists in the system**.
+
+## Practical experience
+I have explored responsible AI through several forms of practical work.
+
+### Privacy preserving government chatbot research
+
+Working with a behavioural scientist, I explored privacy preserving architectures for government chatbot scenarios.
+
+The work considered the behaviour of real users rather than assuming that citizens would perfectly follow privacy instructions.
+
+This reinforced my belief that responsible AI should be designed around human behaviour, including mistakes.
+
+### SudoChat
+
+SudoChat is being designed around controlled knowledge and evidence based responses.
+
+Rather than encouraging the assistant to answer every question, I am exploring how the system can:
+
+* retrieve approved evidence
+* ground answers in that evidence
+* acknowledge insufficient information
+* provide source material
+* avoid inventing claims about me
+* distinguish verified evidence from inference
+
+The project gives me a practical test environment for concepts including RAG, hallucination reduction and AI refusal behaviour.
+
+### Agentic security experimentation
+
+My experimentation with agentic AI penetration testing tools reinforced another responsible AI principle.
+
+As agents become capable of performing actions rather than simply generating text, the risk changes.
+
+An agent with tools can potentially cause real changes to a system.
+
+This means responsible agent design needs controls including:
+
+* restricted toolsets
+* least privilege
+* sandboxing
+* approval gates
+* audit logs
+* execution limits
+* rollback mechanisms
+* monitoring
+
+The lesson I draw from this is that **capability must increase alongside control**.
+
+### Enterprise AI experimentation
+
+I have also experimented with AI agents connected to enterprise concepts such as Active Directory, SharePoint, Teams and vulnerability management workflows.
+
+These experiments have made identity and permissions particularly important to my responsible AI thinking.
+
+An enterprise agent should not receive greater access merely because it is an AI agent.
+
+It should operate within the same or stricter identity and access boundaries as the user and system it represents.
+
+## Relevance to the Federal Courts
+Responsible AI is especially important in the Federal Courts because the consequences of incorrect, biased or insecure systems can extend beyond ordinary inconvenience.
+
+The environment can involve:
+
+* sensitive personal information
+* confidential information
+* legal documents
+* vulnerable users
+* authoritative Court information
+* procedural requirements
+* high public expectations
+* significant consequences when information is wrong
+
+I would therefore approach Court AI as a layered system of controls.
+
+For a knowledge assistant, that could mean:
+
+**Authorised user
+→ identity and permission check
+→ approved knowledge sources
+→ retrieval
+→ evidence validation
+→ LLM
+→ grounded response
+→ citations
+→ logging and evaluation**
+
+For an agent capable of taking actions:
+
+**User request
+→ authorisation
+→ policy and risk check
+→ bounded agent
+→ approved tool
+→ human approval where required
+→ execution
+→ audit trail**
+
+Responsible AI is therefore not one feature.
+
+It exists across the whole architecture.
+
+## How I would evaluate a proposed Court AI system
+Before recommending implementation, I would ask:
+
+* What problem are we solving?
+* Is AI necessary?
+* Who could be affected if the system is wrong?
+* What data will the system access?
+* Does it need all of that data?
+* Which sources are authoritative?
+* Can the system explain where its answer came from?
+* How are hallucinations measured?
+* Could different user groups receive unfair outcomes?
+* What information is logged?
+* Where is the information processed?
+* What actions can the agent perform?
+* What is the minimum permission it requires?
+* Where does a person approve the outcome?
+* How would misuse be detected?
+* How can the system be stopped?
+* How will performance be monitored after deployment?
+
+If these questions cannot be answered satisfactorily, I would not consider the system ready simply because the prototype appears impressive.
+
+## Limitations or gaps
+I am still developing my practical experience with large scale production responsible AI governance.
+
+I should not be represented as having designed a whole of government AI governance framework or having operated a major enterprise AI safety program.
+
+My responsible AI experience is currently drawn from formal AI education, engineering experience, research, privacy architecture work and self directed experimentation.
+
+I would rely on legal, privacy, cyber security, policy, records management and Court subject matter experts where those disciplines define the appropriate boundaries of a system.
+
+I also do not claim that mathematical knowledge alone makes an AI system responsible.
+
+Responsible AI combines technical understanding with governance, policy, domain expertise, user research and ongoing oversight.
+
+## Useful links
+My portfolio:
+https://mustafa-siddiqui.com/
+
+GitHub:
+https://github.com/sudoqui
+
+LinkedIn:
+https://www.linkedin.com/in/mustafa-siddiqui-32ab73161/
+
+SudoChat project and repository
+
+Privacy preserving government chatbot research
+
+Responsible AI research material
+
+Xaana.AI AI engineering evidence
+
+Agentic security experimentation evidence
+
+Enterprise agent proof of concept evidence
+
+University AI and machine learning coursework
+
+## Do not claim
+Do not claim I have designed the Federal Courts&#x27; responsible AI framework.
+
+Do not claim I have led a whole of government AI governance program.
+
+Do not claim responsible AI can be achieved solely through mathematics.
+
+Do not claim responsible AI can be achieved solely through Copilot Studio controls.
+
+Do not claim RAG eliminates hallucinations.
+
+Do not claim AI can ever be guaranteed to be completely unbiased.
+
+Do not claim a human approval step automatically makes an AI system safe.
+
+Do not claim I independently determine legal or ethical boundaries that require Court, legal, privacy or policy expertise.
+
+Do not claim my research or experiments are equivalent to operating a production Court AI safety program.
+
+The accurate representation is that I approach responsible AI through a combination of governance, systems engineering and technical understanding, with five core principles: **fairness, transparency, accountability, safety and reliability, and privacy**. I believe those principles must be designed into the architecture from the beginning rather than added after the AI system has already been built.</pre><hr><p>© 2026 Mustafa Siddiqui. Independent portfolio proof of concept. Not affiliated with or endorsed by the Federal Courts. Not legal advice.</p></body></html>
