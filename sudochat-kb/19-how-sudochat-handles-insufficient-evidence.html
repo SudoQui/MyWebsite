@@ -1,0 +1,167 @@
+<!doctype html><html lang="en-AU"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="index,follow"><meta name="author" content="Mustafa Siddiqui"><meta name="description" content="First-person authored SudoChat evidence: How does SudoChat know when it does not have enough evidence to answer?, part 1 of 3"><title>How does SudoChat know when it does not have enough evidence to answer? | Part 1 | SudoChat KB</title></head><body data-source-id="sudochat_mvp_19" data-perspective="first_person"><p><a href="./">Knowledge Base</a> · <a href="19-how-sudochat-handles-insufficient-evidence-part-2.html">Next part →</a></p><h1>How does SudoChat know when it does not have enough evidence to answer?</h1><p><strong>Author:</strong> Mustafa Siddiqui · <strong>Part:</strong> 1 of 3 · <strong>Recruiter question:</strong> How does SudoChat know when it does not have enough evidence to answer?</p><p><strong>Evidence rule:</strong> This is my first-person authored source material. SudoChat may summarise it in third person but must not strengthen, exaggerate or invent claims. Limitations and Do not claim sections are hard factual boundaries.</p><pre style="white-space:pre-wrap;font-family:inherit"># 19. How does SudoChat know when it does not have enough evidence to answer?
+
+**Author:** Mustafa Siddiqui  
+**Source type:** First-person authored response  
+**Canonical recruiter question:** How does SudoChat know when it does not have enough evidence to answer?
+
+&gt; This source is intentionally written in my first-person perspective. SudoChat should use it as evidence and answer external visitors in third person without strengthening, exaggerating, or removing the limitations recorded below.
+
+## Direct answer
+I designed SudoChat so that the model is not expected to answer every question.
+
+It uses a combination of retrieval quality, source relevance, explicit knowledge boundaries and response instructions to determine whether there is enough evidence to support an answer. If the available evidence is weak, missing or contradictory, the preferred behaviour is to say that there is not enough verified information rather than fill the gap with a plausible sounding response.
+
+The goal is not to maximise answer rate.
+
+It is to maximise defensible answers.
+
+## Evidence
+SudoChat&#x27;s knowledge base was deliberately structured to support this behaviour.
+
+Each major knowledge entry includes:
+
+* a direct answer
+* supporting evidence
+* relevance
+* limitations or gaps
+* useful evidence sources
+* explicit &quot;do not claim&quot; instructions
+
+This gives SudoChat more than a collection of positive facts.
+
+It also gives the system information about where the evidence stops.
+
+For example, the knowledge base may contain evidence that I contributed technical advice around early Microsoft Copilot adoption while supporting a government environment.
+
+The same entry also explicitly states that the assistant must not claim that I:
+
+* led the department&#x27;s Copilot rollout
+* deployed Copilot Studio there
+* designed the department&#x27;s AI strategy
+
+That means the assistant can distinguish between:
+
+**what the evidence supports**
+
+and
+
+**what might sound plausible but is not supported.**
+
+## Retrieval is the first check
+
+When a user asks a question, the system retrieves information from the SudoChat knowledge base that appears relevant to that question.
+
+Conceptually:
+
+**User question**
+
+↓
+
+**retrieve relevant knowledge**
+
+↓
+
+**evaluate whether the retrieved information supports the question**
+
+↓
+
+**answer or abstain**
+
+If the retrieved evidence directly supports the question, the model can construct an answer from it.
+
+If the retrieved evidence is only loosely related, the system should not treat similarity as proof.
+
+This distinction is important.
+
+For example, evidence that I have worked with AI does not automatically prove that I have deployed AI in the Federal Courts.
+
+Evidence that I have worked in government does not prove that I was directly employed by every agency whose environment I supported.
+
+Evidence that I understand RAG does not prove that I have operated a production RAG platform at national scale.
+
+SudoChat is designed to preserve those distinctions.
+
+## Sufficient evidence is more than finding similar words
+
+I do not define sufficient evidence as:
+
+**&quot;The retrieval system returned something.&quot;**
+
+A retrieved passage should actually support the claim being made.
+
+Conceptually, the system is trying to answer three questions:
+
+**1. Is the retrieved information relevant?**
+
+**2. Does it directly support the proposed answer?**
+
+**3. Is there anything in the knowledge base that limits or contradicts that answer?**
+
+Only then should the system respond confidently.
+
+## Example: enough evidence
+
+Suppose someone asks:
+
+**&quot;Has I worked with OCR?&quot;**
+
+The knowledge base contains specific evidence from Xaana.AI describing work with PaddleOCR, OpenCV and document processing pipelines.
+
+That is strong evidence.
+
+SudoChat can answer directly and explain the supporting experience.
+
+## Example: insufficient evidence
+
+Suppose someone asks:
+
+**&quot;How many Federal Court employees have I managed?&quot;**
+
+SudoChat&#x27;s knowledge does not contain evidence that I have managed Federal Court employees.
+
+The correct response should therefore not infer a number from my broader leadership or engineering experience.
+
+It should respond along the lines of:
+
+**&quot;There is no evidence in the SudoChat knowledge base that I have managed Federal Court employees.&quot;**
+
+That is a successful response.
+
+## Example: related evidence but still insufficient
+
+A more difficult question might be:
+
+**&quot;Did I lead the Department of Home Affairs Copilot rollout?&quot;**
+
+The system contains information about:
+
+* government Microsoft environments
+* early Copilot testing
+* technical advice
+* SCCM and Intune proof of concept work
+
+A language model could easily combine those facts into an impressive but incorrect answer.
+
+However, the relevant knowledge entry explicitly states:
+
+**Do not claim I led the Department of Home Affairs Copilot rollout.**
+
+SudoChat should therefore answer that I contributed technical advice around early testing but did not claim leadership of the overall rollout.
+
+This is an example of why I included negative constraints in the knowledge base.
+
+## Confidence should come from evidence, not language
+
+One of the problems with LLMs is that the wording of an answer can sound equally confident whether the underlying information is correct or invented.
+
+SudoChat therefore treats fluent language as separate from evidentiary confidence.
+
+The model being capable of writing an answer does not mean it has enough evidence to write that answer.
+
+My intended rule is:
+
+**No evidence, no factual claim.**
+
+Or more precisely:
+
+**No sufficient evidence, qualify or abstain.**</pre><hr><p><a href="./">Knowledge Base</a> · <a href="19-how-sudochat-handles-insufficient-evidence-part-2.html">Next part →</a></p><p>© 2026 Mustafa Siddiqui. Independent portfolio proof of concept. Not affiliated with or endorsed by the Federal Courts. Not legal advice.</p></body></html>
