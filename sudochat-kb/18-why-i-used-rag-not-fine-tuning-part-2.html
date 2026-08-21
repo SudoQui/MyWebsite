@@ -1,0 +1,227 @@
+<!doctype html><html lang="en-AU"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="index,follow"><meta name="author" content="Mustafa Siddiqui"><meta name="description" content="First-person authored SudoChat evidence: Why did Mustafa use RAG rather than fine tuning for SudoChat?, part 2 of 3"><title>Why did I use RAG rather than fine tuning for SudoChat? | Part 2 | SudoChat KB</title></head><body data-source-id="sudochat_mvp_18" data-perspective="first_person"><p><a href="18-why-i-used-rag-not-fine-tuning.html">← Previous part</a> · <a href="./">Knowledge Base</a> · <a href="18-why-i-used-rag-not-fine-tuning-part-3.html">Next part →</a></p><h1>Why did I use RAG rather than fine tuning for SudoChat?</h1><p><strong>Author:</strong> Mustafa Siddiqui · <strong>Part:</strong> 2 of 3 · <strong>Recruiter question:</strong> Why did Mustafa use RAG rather than fine tuning for SudoChat?</p><p><strong>Evidence rule:</strong> This is my first-person authored source material. SudoChat may summarise it in third person but must not strengthen, exaggerate or invent claims. Limitations and Do not claim sections are hard factual boundaries.</p><pre style="white-space:pre-wrap;font-family:inherit">## Hallucination reduction
+
+RAG was also chosen because grounding the model in relevant evidence can reduce its reliance on general pretrained knowledge.
+
+Rather than asking:
+
+**&quot;What do you know about me?&quot;**
+
+the architecture becomes:
+
+**&quot;Retrieve the most relevant evidence about me, then answer using that evidence.&quot;**
+
+That reduces one significant source of hallucination.
+
+I do not claim that RAG eliminates hallucination.
+
+The model can still:
+
+* misunderstand the evidence
+* combine evidence incorrectly
+* cite irrelevant information
+* make unsupported inferences
+* receive poor retrieval results
+
+This is why SudoChat also uses explicit limitations and &quot;do not claim&quot; boundaries.
+
+The full approach is closer to:
+
+**retrieval + grounding + constraints + evaluation + refusal**
+
+rather than simply:
+
+**RAG = safe**
+
+## Why this works particularly well for the &quot;Do not claim&quot; model
+
+SudoChat&#x27;s knowledge entries deliberately contain both positive and negative evidence.
+
+For example:
+
+**Supported:**
+I contributed technical advice around early Microsoft Copilot adoption in a government environment.
+
+**Not supported:**
+I led the Department&#x27;s Copilot rollout.
+
+RAG allows those boundaries to be retrieved alongside the supporting evidence.
+
+That means the model can receive both:
+
+**what it is allowed to say**
+
+and
+
+**what it must not infer**
+
+within the same context.
+
+This was an intentional part of SudoChat&#x27;s design.
+
+## Example
+Consider the question:
+
+**&quot;Has I deployed Copilot Studio for the Federal Courts?&quot;**
+
+Without controlled knowledge, a model may attempt to infer an answer from surrounding context.
+
+With SudoChat, retrieval should surface evidence stating that:
+
+* my direct Copilot Studio experience is newer
+* SudoChat is a proof of concept
+* I have not deployed AI within the Federal Courts
+* the system must not claim otherwise
+
+The correct response is therefore straightforward:
+
+**No. I have not deployed Copilot Studio within the Federal Courts.**
+
+That is a good outcome.
+
+SudoChat is not trying to maximise how impressive every answer sounds.
+
+It is trying to maximise how defensible the answers are.
+
+## Fine tuning would introduce unnecessary complexity
+
+For this proof of concept, fine tuning would also create additional work without solving the main problem.
+
+I would need to consider:
+
+* dataset preparation
+* training examples
+* model selection
+* training cost
+* version management
+* retraining when knowledge changes
+* evaluation of the adapted model
+* risk of overfitting
+* whether training data contained outdated information
+
+For a relatively small and controlled evidence set, that complexity would have little benefit.
+
+RAG provides a simpler architecture that better matches the problem.
+
+## Privacy considerations
+
+There is also a privacy and data governance argument.
+
+SudoChat contains information about my career and projects.
+
+Keeping that information in a separate controlled knowledge layer allows clearer decisions about:
+
+* what information is stored
+* where it is stored
+* what can be removed
+* what is retrieved
+* what the model sees for a particular request
+
+That principle becomes even more important in a government environment.
+
+An organisation should think carefully before incorporating changing or sensitive organisational knowledge into a model training process when the same objective can potentially be achieved through controlled retrieval.
+
+## Relevance to the Federal Courts
+The same reasoning could apply to many Federal Court knowledge use cases.
+
+Suppose the Court wanted an internal assistant capable of answering questions about approved procedures.
+
+Fine tuning a model on the procedures would create several problems.
+
+Policies change.
+
+Practice notes change.
+
+Procedures change.
+
+Documents are superseded.
+
+Access permissions change.
+
+Different users may have access to different information.
+
+A RAG architecture could instead keep the information in governed repositories and retrieve the appropriate material when a question is asked.
+
+Conceptually:
+
+**Court user**
+
+↓
+
+**identity and permissions**
+
+↓
+
+**question**
+
+↓
+
+**approved Court repositories**
+
+↓
+
+**retrieve current authorised information**
+
+↓
+
+**LLM**
+
+↓
+
+**grounded answer with sources**
+
+This keeps the authoritative information outside the model.
+
+That has several advantages.
+
+### Current information
+
+If a procedure changes, the knowledge source can be updated without retraining the model.
+
+### Access control
+
+Retrieval can potentially respect the user&#x27;s identity and permissions.
+
+A fine tuned model cannot simply &quot;forget&quot; part of its learned knowledge because a particular user lacks permission to access it.
+
+### Source provenance
+
+Users can be directed to the authoritative document behind an answer.
+
+### Auditability
+
+The organisation can inspect what information was retrieved for a particular response.
+
+### Information lifecycle
+
+Documents can be updated, archived or removed through normal information governance processes.
+
+These are significant advantages in a Court environment.
+
+## Where fine tuning could still be useful
+
+I would not argue that RAG is always better.
+
+There are circumstances where fine tuning could complement the system.
+
+For example, if the Federal Courts needed a model to consistently:
+
+* classify a specialist document type
+* generate outputs in a very specific format
+* understand a repeated domain specific task
+* follow a particular structured drafting pattern
+
+fine tuning or another form of model adaptation might be worth investigating.
+
+A hybrid architecture is also possible:
+
+**Fine tuned model for behaviour**
+
+plus
+
+**RAG for current factual knowledge**
+
+My decision would depend on the actual use case.
+
+I would not select RAG or fine tuning based on which technology sounded more advanced.
+
+I would select the architecture based on what problem needed to be solved.</pre><hr><p><a href="18-why-i-used-rag-not-fine-tuning.html">← Previous part</a> · <a href="./">Knowledge Base</a> · <a href="18-why-i-used-rag-not-fine-tuning-part-3.html">Next part →</a></p><p>© 2026 Mustafa Siddiqui. Independent portfolio proof of concept. Not affiliated with or endorsed by the Federal Courts. Not legal advice.</p></body></html>
