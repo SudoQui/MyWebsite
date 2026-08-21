@@ -1,0 +1,167 @@
+<!doctype html><html lang="en-AU"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="index,follow"><meta name="author" content="Mustafa Siddiqui"><meta name="description" content="First-person authored SudoChat evidence: How was SudoChat built?, part 3 of 3"><title>How did I build SudoChat? | Part 3 | SudoChat KB</title></head><body data-source-id="sudochat_mvp_17" data-perspective="first_person"><p><a href="17-how-i-built-sudochat-part-2.html">← Previous part</a> · <a href="./">Knowledge Base</a></p><h1>How did I build SudoChat?</h1><p><strong>Author:</strong> Mustafa Siddiqui · <strong>Part:</strong> 3 of 3 · <strong>Recruiter question:</strong> How was SudoChat built?</p><p><strong>Evidence rule:</strong> This is my first-person authored source material. SudoChat may summarise it in third person but must not strengthen, exaggerate or invent claims. Limitations and Do not claim sections are hard factual boundaries.</p><pre style="white-space:pre-wrap;font-family:inherit">## Simplified SudoChat architecture
+At a high level, SudoChat can be described as:
+
+**User**
+
+↓
+
+**SudoChat frontend**
+
+↓
+
+**Copilot Studio conversational layer**
+
+↓
+
+**Instructions and responsible AI boundaries**
+
+↓
+
+**Knowledge retrieval**
+
+↓
+
+**Curated evidence about me**
+
+↓
+
+**LLM generates a grounded response**
+
+↓
+
+**Response returned to the user**
+
+Alongside this is an evaluation and governance layer:
+
+**limitations + do not claim rules + fallback behaviour + testing**
+
+The important point is that the LLM is only one component.
+
+The quality of the system depends on the knowledge, retrieval, instructions, user experience, evaluation and boundaries surrounding it.
+
+## Why I built it this way
+I could have built a simpler demonstration that sent prompts directly to a language model.
+
+I deliberately chose not to.
+
+The project is intended to demonstrate several of the concepts I believe are important for enterprise AI:
+
+* grounding AI in controlled information
+* separating verified evidence from model knowledge
+* reducing hallucination
+* defining what a system should not claim
+* designing safe fallback behaviour
+* making knowledge maintainable
+* testing AI behaviour
+* making the system understandable to users
+* thinking about the entire system rather than only the model
+
+That makes SudoChat both a portfolio project and an engineering experiment.
+
+## Relevance to the Federal Courts
+SudoChat is relevant to the Court AI Technologist role because the underlying problem resembles many enterprise AI use cases.
+
+A Court assistant would also need to answer questions using controlled information rather than simply trusting an LLM&#x27;s general knowledge.
+
+The actual Court implementation would be substantially more complex, but the same principles could apply:
+
+**Authorised Court user**
+
+↓
+
+**authenticated AI interface**
+
+↓
+
+**controlled knowledge sources**
+
+↓
+
+**retrieval**
+
+↓
+
+**grounded response**
+
+↓
+
+**sources and evidence**
+
+↓
+
+**safe refusal when information is insufficient**
+
+The Court version would additionally need controls around areas such as:
+
+* identity
+* permissions
+* information classification
+* privacy
+* audit logging
+* records management
+* security
+* source authority
+* human review
+
+SudoChat does not claim to solve all of those problems.
+
+It demonstrates my ability to think about them and convert responsible AI principles into a working proof of concept.
+
+## Limitations or gaps
+SudoChat is a proof of concept.
+
+It should not be represented as a production enterprise system.
+
+It should not be represented as a Federal Court system or as using Federal Court internal information.
+
+The initial knowledge base is manually curated and structured.
+
+That is intentional for the proof of concept because I want strong control over what evidence the assistant initially receives.
+
+The project is still being expanded and evaluated.
+
+Its direct Copilot Studio implementation experience is recent.
+
+SudoChat should therefore be presented as evidence of practical learning, architecture thinking and responsible AI experimentation rather than evidence that I have already operated a large scale Copilot Studio environment.
+
+## Useful links
+SudoChat project page
+
+SudoChat GitHub repository
+
+My portfolio:
+https://mustafa-siddiqui.com/
+
+GitHub:
+https://github.com/sudoqui
+
+Federal Court AI Technologist application evidence base
+
+Responsible AI research
+
+Privacy preserving government chatbot research
+
+## Do not claim
+Do not claim SudoChat is a Federal Court application.
+
+Do not claim SudoChat has access to Federal Court systems or information.
+
+Do not claim it is a production enterprise deployment.
+
+Do not claim RAG eliminates hallucination.
+
+Do not claim the assistant can verify every answer with certainty.
+
+Do not claim SudoChat was fine tuned on my personal information.
+
+Do not claim the LLM itself contains the SudoChat knowledge base.
+
+Do not claim the current proof of concept implements every security control that would be required in a real Court environment.
+
+Do not claim SudoChat represents the Federal Courts&#x27; existing AI architecture.
+
+Do not claim the Engine Room represents physical infrastructure.
+
+Do not claim the manually curated knowledge base would necessarily be the final approach for an enterprise Court implementation.
+
+The accurate representation is that SudoChat was built as a **bounded Copilot Studio proof of concept combining a custom frontend, structured evidence, retrieval and grounding, explicit claim restrictions, uncertainty behaviour and responsible AI principles to demonstrate how an assistant can be useful without being encouraged to invent information.**</pre><hr><p><a href="17-how-i-built-sudochat-part-2.html">← Previous part</a> · <a href="./">Knowledge Base</a></p><p>© 2026 Mustafa Siddiqui. Independent portfolio proof of concept. Not affiliated with or endorsed by the Federal Courts. Not legal advice.</p></body></html>
