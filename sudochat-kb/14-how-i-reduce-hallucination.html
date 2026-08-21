@@ -1,0 +1,432 @@
+<!doctype html><html lang="en-AU"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="index,follow"><meta name="author" content="Mustafa Siddiqui"><meta name="description" content="First-person authored SudoChat evidence: How would Mustafa reduce hallucination in an AI system?"><link rel="canonical" href="https://mustafa-siddiqui.com/sudochat-kb/14-how-i-reduce-hallucination.html"><title>How would I reduce hallucination in an AI system? | SudoChat Knowledge Base</title></head><body data-source-id="sudochat_mvp_14" data-perspective="first_person"><p><a href="./">SudoChat Knowledge Base</a> · <a href="../sudochat.html">SudoChat</a></p><p><strong>Authored evidence:</strong> This is my first-person source material. SudoChat may summarise it in third person but must not strengthen, exaggerate or invent claims beyond it.</p><pre style="white-space:pre-wrap;font-family:inherit"># 14. How would I reduce hallucination in an AI system?
+
+**Author:** Mustafa Siddiqui  
+**Source type:** First-person authored response  
+**Canonical recruiter question:** How would Mustafa reduce hallucination in an AI system?
+
+&gt; This source is intentionally written in my first-person perspective. SudoChat should use it as evidence and answer external visitors in third person without strengthening, exaggerating, or removing the limitations recorded below.
+
+## Direct answer
+I would not use one universal technique because hallucination depends heavily on how the AI system is designed.
+
+My approach would be to reduce the opportunity for the model to invent information in the first place, ground outputs against trusted evidence where appropriate, validate important claims, constrain what the model is allowed to do, and design a safe fallback when there is not enough reliable information to answer.
+
+For a high trust environment such as the Federal Courts, I would treat hallucination as a system level risk rather than something that can be solved with better prompting alone.
+
+## General approach
+I would begin by identifying **what kind of AI system is being built**.
+
+A chatbot answering questions from documents has different hallucination risks from:
+
+* a classifier
+* an OCR pipeline
+* an extraction model
+* a coding assistant
+* an autonomous agent
+* a multimodal vision model
+* a summarisation system
+
+The mitigation therefore needs to match the architecture.
+
+For a generative language system, I would generally use several layers of control.
+
+### 1. Restrict the knowledge the model should rely upon
+
+If the system needs to answer factual questions about a specific organisation, I would avoid relying primarily on the LLM&#x27;s pretrained knowledge.
+
+Instead, I would provide trusted and current information through retrieval or another controlled data source.
+
+This reduces the need for the model to reconstruct facts from statistical patterns learned during training.
+
+### 2. Ground important claims in evidence
+
+Where factual accuracy is important, generated claims should be traceable to evidence.
+
+I would prefer systems where the model can say:
+
+**&quot;This answer is based on these sources.&quot;**
+
+rather than simply producing a confident answer.
+
+The application can then verify that the cited material actually supports the claim.
+
+### 3. Give the system permission not to answer
+
+One of the simplest but most important design decisions is allowing the AI to admit uncertainty.
+
+If retrieval does not return sufficient evidence, I would rather the system respond:
+
+**&quot;I do not have enough information in the approved sources to answer that reliably.&quot;**
+
+than attempt to complete the answer from general model knowledge.
+
+A responsible system therefore needs an abstention path.
+
+### 4. Separate deterministic work from generative work
+
+I would not use an LLM for tasks that conventional software can perform more reliably.
+
+For example, if a date, identifier or numerical value can be retrieved directly from a database, the system should retrieve it rather than ask an LLM to reconstruct it.
+
+An architecture might therefore look like:
+
+**Structured data → deterministic calculation → LLM explanation**
+
+rather than:
+
+**Raw question → LLM guesses everything**
+
+### 5. Constrain the output
+
+Where possible, I would restrict what the model can generate.
+
+This could involve:
+
+* structured outputs
+* predefined schemas
+* approved tool calls
+* restricted answer formats
+* controlled vocabularies
+* system instructions
+* validation rules
+
+The less freedom a model needs to perform a task, the smaller the opportunity for unsupported generation.
+
+### 6. Evaluate systematically
+
+I would build an evaluation dataset representing realistic questions, difficult questions, ambiguous inputs and known failure cases.
+
+I would then measure:
+
+* factual accuracy
+* retrieval accuracy
+* citation correctness
+* unsupported claim rate
+* refusal accuracy
+* false confidence
+* performance on adversarial inputs
+
+Hallucination reduction therefore becomes something measurable rather than something judged by whether a demo &quot;looks good.&quot;
+
+### 7. Human review for consequential outputs
+
+Where an incorrect result could materially affect somebody, human verification should remain part of the workflow.
+
+The higher the consequence of failure, the less comfortable I would be allowing generative output to move directly into action.
+
+---
+
+## Example: hallucination in a different type of AI system
+
+Hallucination is not limited to conversational RAG systems.
+
+Consider an **LLM based invoice extraction pipeline** similar to the document processing work I encountered at Xaana.AI.
+
+Suppose the invoice contains:
+
+**Total: $1,842.76**
+
+An OCR system may incorrectly read part of the image.
+
+An LLM receiving incomplete OCR output could then infer that the total is $1,842.16 because that value appears plausible.
+
+In this scenario, RAG would not necessarily be the primary solution.
+
+I would instead design the pipeline around the actual failure point.
+
+For example:
+
+**Document image
+→ image preprocessing
+→ OCR
+→ extraction model or LLM
+→ structured JSON
+→ deterministic validation
+→ confidence checks
+→ human review where necessary**
+
+Controls could include:
+
+* OCR confidence thresholds
+* checking extracted values against the original document
+* validating that line item totals mathematically reconcile
+* checking GST calculations
+* schema validation
+* detecting missing mandatory fields
+* comparing multiple extraction methods
+* escalating low confidence documents for human review
+
+If:
+
+**subtotal + GST ≠ total**
+
+the system should flag the document rather than let the language model explain away the inconsistency.
+
+That illustrates my broader philosophy:
+
+**The best hallucination control depends on where uncertainty enters the system.**
+
+---
+
+## Research evidence
+Research supports the use of retrieval as one method of reducing unsupported generation.
+
+Béchard and Marquez Ayala&#x27;s 2024 work, *Reducing hallucination in structured outputs via Retrieval-Augmented Generation*, demonstrated that incorporating retrieval into an enterprise generative AI workflow significantly reduced hallucination and improved generalisation on information outside the model&#x27;s training domain.
+
+However, I would not interpret this as meaning that RAG solves hallucination.
+
+More recent research has highlighted another important problem: **if retrieval supplies incorrect or biased information, the model can confidently hallucinate on top of bad evidence**. Debate-Augmented RAG research, for example, specifically examines this problem and proposes additional checking of both retrieval and generation.
+
+Research such as HalluGuard has similarly explored adding a separate evidence checking model that evaluates whether generated claims are actually supported by retrieved documents.
+
+For me, the important lesson is:
+
+**RAG reduces one source of hallucination, but the retrieval itself must also be evaluated.**
+
+---
+
+## How I would approach this for the Federal Courts
+The threshold would be considerably higher in the Federal Courts because the Court itself has explicitly identified hallucination as a risk of generative AI.
+
+The Federal Court&#x27;s April 2026 Generative Artificial Intelligence Practice Note warns that generative AI can produce fictitious cases, citations and quotations, incorrect legal information and factual errors. It also notes that AI systems can falsely confirm that information is accurate when challenged.
+
+The Court states clearly that presenting false or inaccurate information to the Court is unacceptable.
+
+I would therefore design a Court knowledge system so that correctness does not depend solely on the language model.
+
+### Example: internal Federal Court knowledge assistant
+
+Suppose Court staff need an assistant that answers questions about internal procedures or approved operational guidance.
+
+I might design the architecture conceptually as:
+
+**Court user
+→ authenticated identity
+→ Copilot Studio
+→ authorised knowledge sources
+→ retrieval
+→ evidence ranking
+→ LLM generation
+→ evidence validation
+→ citations
+→ response**
+
+The important control is that Copilot Studio should not simply answer from the model&#x27;s general knowledge when the question concerns authoritative Court information.
+
+The assistant should be grounded against specifically approved sources.
+
+These could potentially include appropriate repositories such as:
+
+* approved internal policies
+* procedural documentation
+* practice notes
+* operational manuals
+* approved SharePoint content
+* relevant public Court material
+
+The exact sources would be determined by Court governance and information owners.
+
+### Retrieval thresholds
+
+I would introduce a minimum evidence requirement.
+
+Conceptually:
+
+**Question
+→ search authorised knowledge
+→ relevant evidence found?**
+
+If yes:
+
+**Generate answer using retrieved evidence**
+
+If no:
+
+**Do not manufacture an answer**
+
+Instead:
+
+**&quot;I could not find sufficient information in the approved Court knowledge sources. Please consult the relevant authoritative source or escalate this question.&quot;**
+
+This is a feature, not a failure.
+
+### Citation validation
+
+I would want the system to provide the source behind important factual claims.
+
+But citation generation alone is insufficient.
+
+A model can cite a real document that does not actually support what it has written.
+
+The evaluation therefore needs to test:
+
+**Is the citation real?**
+
+and separately:
+
+**Does the cited passage actually support the claim?**
+
+### Source hierarchy
+
+Another problem arises when documents disagree.
+
+The system may retrieve:
+
+* an outdated procedure
+* a current procedure
+* an archived document
+* informal guidance
+* an authoritative policy
+
+I would therefore use metadata and governance to establish source authority.
+
+For example, an approved current policy should rank above an archived guidance document.
+
+The AI should not be expected to infer organisational authority purely from semantic similarity.
+
+### Court specific evaluation set
+
+Before releasing the assistant widely, I would create an evaluation set with Court subject matter experts.
+
+It could include:
+
+* straightforward questions with known answers
+* questions where multiple documents are relevant
+* questions where the correct answer is &quot;insufficient information&quot;
+* outdated policy references
+* deliberately misleading questions
+* fictitious case citations
+* ambiguous requests
+* attempts to make the assistant provide legal advice
+* questions outside the authorised knowledge base
+
+The system would then be evaluated repeatedly as models, prompts, connectors and knowledge sources change.
+
+### Copilot Studio guardrails
+
+Within Copilot Studio, I would use the platform&#x27;s available controls to constrain behaviour, define knowledge sources and establish fallback behaviour.
+
+But I would not assume that selecting a grounding option in the interface means the hallucination problem has been solved.
+
+I would test the actual system behaviour.
+
+The important question is not:
+
+**&quot;Is grounding enabled?&quot;**
+
+It is:
+
+**&quot;When we give this system hundreds of realistic Court questions, how often does it produce a claim that is not supported by an approved source?&quot;**
+
+That is the engineering question.
+
+### Higher consequence use cases
+
+For more sensitive Court applications, I would increase the safeguards.
+
+A system assisting with administrative information retrieval may be suitable for controlled generation.
+
+A system interacting with case material would require substantially stronger controls.
+
+A system whose output could influence judicial decision making would require an entirely different risk assessment, and there may be circumstances where I would recommend that generative AI not perform the task at all.
+
+The objective would never be zero human involvement simply because an agent technically can perform a workflow.
+
+---
+
+## my overall position
+I do not believe hallucination can simply be &quot;turned off.&quot;
+
+LLMs are probabilistic systems.
+
+The engineering objective is therefore to design the surrounding system so that unsupported generation becomes:
+
+* less likely
+* easier to detect
+* less consequential
+* traceable when it occurs
+* unable to silently propagate into important decisions
+
+For me, the strongest hallucination strategy is therefore layered:
+
+**Good data
+→ controlled retrieval
+→ authoritative sources
+→ constrained generation
+→ evidence checking
+→ citations
+→ evaluation
+→ safe refusal
+→ human oversight where consequence requires it**
+
+In a Court environment, I would rather build an AI system that refuses ten difficult questions responsibly than one that confidently invents the answer to one of them.
+
+## Relevance to the Federal Courts
+This approach directly reflects the Federal Court&#x27;s own concern about generative AI producing fictitious authorities, incorrect legal information and factual errors.
+
+The role of the Court AI Technologist would therefore not simply be to make AI systems more capable.
+
+It would also involve engineering ways to determine:
+
+**When should the system trust its information?**
+
+**When should a user trust the system?**
+
+and most importantly:
+
+**When should the system stop and ask for human involvement?**
+
+I believe those questions are central to responsible Court AI.
+
+## Limitations or gaps
+I do not claim that RAG eliminates hallucination.
+
+I do not claim that prompting alone can eliminate hallucination.
+
+I do not claim that citations automatically make an answer accurate.
+
+I have theoretical and practical experience with these architectures, but I have not operated a large scale production Federal Court RAG system.
+
+Any Court implementation would require collaboration with Court subject matter experts, information owners, cyber security specialists, privacy specialists, enterprise architects and other relevant stakeholders.
+
+The acceptable hallucination rate would also depend on the use case. A low consequence productivity assistant and a system interacting with legal information cannot reasonably be assessed using identical risk thresholds.
+
+## Useful links
+Federal Court Generative Artificial Intelligence Practice Note, 16 April 2026
+
+Federal Court Notice to the Profession regarding Generative AI, 16 April 2026
+
+Béchard and Marquez Ayala, *Reducing hallucination in structured outputs via Retrieval-Augmented Generation*, 2024
+
+Hu et al., *Removal of Hallucination on Hallucination: Debate-Augmented RAG*, 2025
+
+Bergeron et al., *HalluGuard: Evidence-Grounded Small Reasoning Models to Mitigate Hallucinations in Retrieval-Augmented Generation*, 2025
+
+My SudoChat project and repository
+
+My Xaana.AI document processing experience
+
+Responsible AI and privacy research
+
+## Do not claim
+Do not claim hallucination can be completely eliminated.
+
+Do not claim RAG guarantees factual accuracy.
+
+Do not claim a retrieved document is automatically correct or authoritative.
+
+Do not claim citations guarantee that the generated statement is supported.
+
+Do not claim Copilot Studio automatically eliminates hallucination when grounding is enabled.
+
+Do not claim I have deployed a production Federal Court RAG system.
+
+Do not claim I have access to internal Federal Court knowledge repositories.
+
+Do not claim the example Federal Court architecture described here represents the Court&#x27;s existing architecture.
+
+Do not claim an AI system should independently provide authoritative legal advice.
+
+Do not claim human review is unnecessary because an AI system has been grounded.
+
+The accurate representation is that I would reduce hallucination through **system design rather than one feature**: controlling the information available to the model, grounding it against authoritative evidence, validating important outputs, measuring failures, enabling safe refusal and retaining human oversight wherever the consequence of an incorrect answer requires it.</pre><hr><p>© 2026 Mustafa Siddiqui. Independent portfolio proof of concept. Not affiliated with or endorsed by the Federal Courts. Not legal advice.</p></body></html>
