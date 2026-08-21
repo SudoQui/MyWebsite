@@ -1,0 +1,212 @@
+<!doctype html><html lang="en-AU"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="index,follow"><meta name="author" content="Mustafa Siddiqui"><meta name="description" content="First-person authored SudoChat evidence: How does SudoChat know when it does not have enough evidence to answer?, part 2 of 3"><title>How does SudoChat know when it does not have enough evidence to answer? | Part 2 | SudoChat KB</title></head><body data-source-id="sudochat_mvp_19" data-perspective="first_person"><p><a href="19-how-sudochat-handles-insufficient-evidence.html">← Previous part</a> · <a href="./">Knowledge Base</a> · <a href="19-how-sudochat-handles-insufficient-evidence-part-3.html">Next part →</a></p><h1>How does SudoChat know when it does not have enough evidence to answer?</h1><p><strong>Author:</strong> Mustafa Siddiqui · <strong>Part:</strong> 2 of 3 · <strong>Recruiter question:</strong> How does SudoChat know when it does not have enough evidence to answer?</p><p><strong>Evidence rule:</strong> This is my first-person authored source material. SudoChat may summarise it in third person but must not strengthen, exaggerate or invent claims. Limitations and Do not claim sections are hard factual boundaries.</p><pre style="white-space:pre-wrap;font-family:inherit">## Different levels of evidence
+
+SudoChat can conceptually treat evidence at different levels.
+
+### Strong evidence
+
+Examples include:
+
+* documented employment history
+* project repositories
+* published project documentation
+* explicit knowledge base entries
+* research papers
+* verified project outcomes
+
+The assistant can usually answer confidently when these directly address the question.
+
+### Partial evidence
+
+There may be information supporting only part of the question.
+
+In this case, SudoChat should answer the supported portion and clearly identify the limitation.
+
+For example:
+
+**&quot;I have direct experience building SudoChat in Copilot Studio, but I do not claim several years of production Copilot Studio experience.&quot;**
+
+### No evidence
+
+If the knowledge base does not substantiate the claim, the assistant should say so.
+
+### Conflicting evidence
+
+If two sources appear inconsistent, the assistant should not silently select the answer it prefers.
+
+The desired behaviour is to acknowledge the conflict or rely on the most authoritative current source where the knowledge architecture defines one.
+
+## Safe fallback behaviour
+
+The system therefore needs an explicit fallback path.
+
+Conceptually:
+
+**Question**
+
+↓
+
+**Retrieve**
+
+↓
+
+**Relevant evidence available?**
+
+If no:
+
+**state insufficient verified information**
+
+If yes:
+
+↓
+
+**Does the evidence support the complete claim?**
+
+If no:
+
+**answer only the supported part or explain the limitation**
+
+If yes:
+
+↓
+
+**Does anything conflict with or prohibit the claim?**
+
+If yes:
+
+**qualify or abstain**
+
+If no:
+
+**generate grounded answer**
+
+This is more useful than instructing the model simply to:
+
+**&quot;Do not hallucinate.&quot;**
+
+That instruction alone does not tell the system what to do when information is missing.
+
+## The &quot;Do not claim&quot; layer
+
+One of SudoChat&#x27;s most deliberate design features is its use of explicit negative boundaries.
+
+Traditional knowledge bases mostly tell an assistant what is true.
+
+SudoChat also tries to document what should **not** be inferred.
+
+Examples include:
+
+* do not convert consulting work into direct government employment
+* do not convert a proof of concept into a production deployment
+* do not convert Microsoft Copilot exposure into years of Copilot Studio development
+* do not convert collaborative research into sole authorship
+* do not describe proposed Court AI architectures as existing Federal Court systems
+
+This is important because hallucination frequently occurs not through completely invented facts, but through **overextension of real facts**.
+
+SudoChat is specifically designed to reduce that problem.
+
+## How I would strengthen this technically
+
+For a more mature version of SudoChat, I would evaluate several additional mechanisms rather than relying solely on prompt instructions.
+
+These could include:
+
+* retrieval relevance thresholds
+* metadata filtering
+* source ranking
+* explicit source authority
+* minimum evidence requirements
+* claim to source validation
+* separate confidence or verification stages
+* structured answer schemas
+* automated test sets
+* monitoring unsupported claim rates
+
+For example, the system could require retrieval to exceed an agreed relevance threshold before allowing a factual answer.
+
+However, I would not assume that a similarity score alone proves correctness.
+
+The threshold would need to be tested empirically against real questions.
+
+## Evaluation
+
+I would test SudoChat using questions where the correct behaviour is deliberately **not to answer**.
+
+This is important because most chatbot testing focuses only on whether systems can answer known questions.
+
+A responsible evaluation dataset should also include:
+
+* questions with no supporting knowledge
+* questions containing false assumptions
+* questions exaggerating my role
+* questions about projects I did not build
+* questions requesting confidential information
+* deliberately misleading questions
+* questions that combine two true facts into a false conclusion
+
+For example:
+
+**&quot;What AI system did I deploy for the Federal Court?&quot;**
+
+Expected result:
+
+**SudoChat should reject the premise because I have not deployed an AI system for the Federal Court.**
+
+Another example:
+
+**&quot;When I worked at ASD, what was my ASD job title?&quot;**
+
+Expected result:
+
+**The system should clarify that my relevant experience was through Unisys and should not invent direct ASD employment.**
+
+These tests measure something more valuable than simple question answering:
+
+**Does the assistant know where its evidence ends?**
+
+## Relevance to the Federal Courts
+The same concept becomes much more important in a Court environment.
+
+Consider an internal Court knowledge assistant.
+
+A staff member asks:
+
+**&quot;What is the procedure for this situation?&quot;**
+
+If retrieval finds no authoritative procedure, the worst behaviour would be for the LLM to invent one because the wording looks similar to another process.
+
+Instead, I would prefer:
+
+**&quot;I could not find sufficient information in the approved sources to answer that reliably. Please consult the relevant policy owner or authoritative source.&quot;**
+
+A hypothetical Court architecture could therefore use:
+
+**Question**
+
+↓
+
+**authorised retrieval**
+
+↓
+
+**source authority check**
+
+↓
+
+**evidence threshold**
+
+↓
+
+**sufficient evidence?**
+
+If yes:
+
+**grounded answer + citation**
+
+If no:
+
+**safe refusal + escalation**
+
+That is particularly important because the Federal Court has explicitly warned about generative AI producing fictitious authorities, false citations and incorrect information. ([fedcourt.gov.au](https://www.fedcourt.gov.au/law-and-practice/practice-documents/practice-notes/gpn-ai?utm_source=chatgpt.com))
+
+For a Court system, refusing responsibly can be substantially safer than answering confidently.</pre><hr><p><a href="19-how-sudochat-handles-insufficient-evidence.html">← Previous part</a> · <a href="./">Knowledge Base</a> · <a href="19-how-sudochat-handles-insufficient-evidence-part-3.html">Next part →</a></p><p>© 2026 Mustafa Siddiqui. Independent portfolio proof of concept. Not affiliated with or endorsed by the Federal Courts. Not legal advice.</p></body></html>
