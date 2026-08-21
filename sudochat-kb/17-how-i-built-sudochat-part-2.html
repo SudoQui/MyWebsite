@@ -1,0 +1,274 @@
+<!doctype html><html lang="en-AU"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="index,follow"><meta name="author" content="Mustafa Siddiqui"><meta name="description" content="First-person authored SudoChat evidence: How was SudoChat built?, part 2 of 3"><title>How did I build SudoChat? | Part 2 | SudoChat KB</title></head><body data-source-id="sudochat_mvp_17" data-perspective="first_person"><p><a href="17-how-i-built-sudochat.html">← Previous part</a> · <a href="./">Knowledge Base</a> · <a href="17-how-i-built-sudochat-part-3.html">Next part →</a></p><h1>How did I build SudoChat?</h1><p><strong>Author:</strong> Mustafa Siddiqui · <strong>Part:</strong> 2 of 3 · <strong>Recruiter question:</strong> How was SudoChat built?</p><p><strong>Evidence rule:</strong> This is my first-person authored source material. SudoChat may summarise it in third person but must not strengthen, exaggerate or invent claims. Limitations and Do not claim sections are hard factual boundaries.</p><pre style="white-space:pre-wrap;font-family:inherit">## Evidence
+### 1. The knowledge base was designed before the chatbot
+
+I started by defining the questions the assistant should be able to answer.
+
+Rather than loading an unstructured collection of documents into an AI system and hoping the model could interpret everything correctly, I created a structured set of high value questions about areas such as:
+
+* who I am
+* why I am suited to the Federal Courts
+* my AI engineering experience
+* my government and enterprise experience
+* responsible AI
+* hallucination reduction
+* RAG and AI agents
+* technical delivery
+* Court AI design
+* limitations and gaps
+
+Each knowledge entry follows a consistent structure:
+
+**Question**
+
+**Direct answer**
+
+**Evidence**
+
+**Relevance to the Federal Courts**
+
+**Limitations or gaps**
+
+**Useful links**
+
+**Do not claim**
+
+This structure is intentional.
+
+It gives the model positive evidence about what it can say while also explicitly defining boundaries around what it must not infer or exaggerate.
+
+For example, the knowledge base does not simply say that I have Copilot experience.
+
+It distinguishes between:
+
+* early Microsoft Copilot exposure in a government environment
+* Microsoft enterprise infrastructure experience
+* newer direct Copilot Studio work
+* broader AI engineering experience
+
+This reduces the risk of the assistant converting related experience into an unsupported claim.
+
+### 2. Copilot Studio provides the conversational layer
+
+Copilot Studio is used as the main environment for configuring the assistant.
+
+SudoChat uses the platform to provide the conversational interface and to experiment with:
+
+* instructions
+* knowledge grounding
+* conversational behaviour
+* retrieval
+* response boundaries
+* fallback behaviour
+* source use
+* testing
+* responsible AI controls
+
+I deliberately chose Copilot Studio because the project is intended to demonstrate my ability to work with the Microsoft AI ecosystem relevant to the Court AI Technologist role.
+
+However, I do not treat Copilot Studio as a black box.
+
+The project is also intended to demonstrate my understanding of the architecture underneath concepts such as retrieval, grounding, context, permissions, tool use and evaluation.
+
+### 3. Retrieval and grounding were central design decisions
+
+SudoChat is designed around the principle that an answer about me should be based on available evidence rather than generated purely from the model&#x27;s pretrained knowledge.
+
+Conceptually:
+
+**User question**
+
+↓
+
+**SudoChat**
+
+↓
+
+**retrieve relevant knowledge**
+
+↓
+
+**provide evidence to the model**
+
+↓
+
+**generate an answer constrained by that evidence**
+
+↓
+
+**return the answer to the user**
+
+This is a RAG style architecture.
+
+The assistant is not intended to memorise me through fine tuning.
+
+Instead, it retrieves relevant information at query time.
+
+This makes the knowledge easier to:
+
+* update
+* correct
+* expand
+* audit
+* remove
+* attribute to evidence
+
+It also allows the assistant to distinguish between what is supported and what is merely plausible.
+
+### 4. The knowledge was deliberately written with negative constraints
+
+One of the more important design decisions in SudoChat is the **Do not claim** section attached to knowledge entries.
+
+For example, the assistant may have evidence that I:
+
+* worked in environments supporting government departments
+* experimented with Copilot
+* built AI proofs of concept
+* worked on responsible AI research
+
+But it is also explicitly told not to transform those facts into claims such as:
+
+* I worked directly for every department involved
+* I led a department&#x27;s AI strategy
+* I have years of production Copilot Studio experience
+* I have deployed AI into the Federal Courts
+* I am a lawyer
+* a prototype was a production enterprise system
+
+This gives the model both an evidence boundary and a language boundary.
+
+I consider this an important responsible AI design principle.
+
+A knowledge system should define not only:
+
+**&quot;What do we know?&quot;**
+
+but also:
+
+**&quot;What conclusions are we not authorised to draw from what we know?&quot;**
+
+### 5. SudoChat was designed to recognise insufficient evidence
+
+Another important requirement was that the assistant should not feel obligated to answer everything.
+
+If the knowledge base does not contain enough evidence to support a factual claim, the desired behaviour is for SudoChat to acknowledge the limitation rather than fill the gap with a plausible answer.
+
+Conceptually:
+
+**Question**
+
+↓
+
+**Retrieve evidence**
+
+↓
+
+**Is sufficient supporting information available?**
+
+If yes:
+
+**answer using the evidence**
+
+If no:
+
+**state that there is insufficient verified information**
+
+This principle is particularly important because SudoChat is effectively a demonstration of my own professional history.
+
+A hallucinated accomplishment could materially misrepresent me.
+
+The project therefore treats refusal or uncertainty as successful behaviour when the evidence does not justify an answer.
+
+### 6. SudoChat was also built as a user experience project
+
+I did not want the system to look like a default chatbot demonstration.
+
+I built a dedicated SudoChat interface around the Copilot concept.
+
+The landing experience was designed around three main areas:
+
+**About Mustafa**
+
+**Why Mustafa for the Federal Courts**
+
+**About this chat**
+
+These entry points help users understand what kinds of questions the assistant is intended to answer.
+
+The interface also includes clear disclaimers and prompt suggestions rather than presenting the system as an unrestricted general AI assistant.
+
+The prompt cards populate the chat input so that the user remains in control of actually submitting the question.
+
+Once a conversation begins, the landing content gives way to the active chat experience.
+
+### 7. The Engine Room explains the system behind the chat
+
+I also designed an **Engine Room** view.
+
+The purpose of this view is to expose the architecture and responsible AI thinking behind SudoChat rather than allowing the conversational interface to hide how the system works.
+
+The user can move between:
+
+**Chat**
+
+and
+
+**Engine Room**
+
+The interface uses a page transition between these views.
+
+The Engine Room is intended to explain that an apparently simple conversation is supported by components such as:
+
+* the knowledge base
+* retrieval
+* grounding
+* model instructions
+* evidence boundaries
+* responsible AI controls
+
+This is important to me because one of the themes of the project is transparency.
+
+The chatbot should not be presented as magic.
+
+The user should be able to understand at a high level what makes the answers possible.
+
+### 8. The frontend was intentionally designed as a single screen experience
+
+I also placed constraints on the frontend design.
+
+The application was designed so the main page remains within a single browser viewport.
+
+The page itself should not require vertical scrolling.
+
+Instead:
+
+* the overall interface remains fixed within the available screen
+* the chat conversation itself can scroll when necessary
+* the Engine Room also remains within the viewport
+* users can return from the Engine Room directly to the chat
+
+This was a deliberate user experience decision so that SudoChat feels like an application rather than a long scrolling portfolio page.
+
+### 9. The project was developed iteratively
+
+SudoChat was not designed completely in one pass.
+
+I iterated on:
+
+* layout
+* visual hierarchy
+* prompt cards
+* navigation
+* chat behaviour
+* Engine Room presentation
+* viewport behaviour
+* knowledge structure
+* responsible AI wording
+* evidence boundaries
+
+This iterative process is representative of how I approach technical work.
+
+I build something, test how it behaves, identify where the experience or architecture is weak, and then refine it.
+
+The current knowledge base development is part of that same process.
+
+The initial twenty questions are being written as the strongest evidence base before the system is expanded.</pre><hr><p><a href="17-how-i-built-sudochat.html">← Previous part</a> · <a href="./">Knowledge Base</a> · <a href="17-how-i-built-sudochat-part-3.html">Next part →</a></p><p>© 2026 Mustafa Siddiqui. Independent portfolio proof of concept. Not affiliated with or endorsed by the Federal Courts. Not legal advice.</p></body></html>
