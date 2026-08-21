@@ -1,0 +1,187 @@
+<!doctype html><html lang="en-AU"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="index,follow"><meta name="author" content="Mustafa Siddiqui"><meta name="description" content="First-person authored SudoChat evidence: Why did Mustafa use RAG rather than fine tuning for SudoChat?, part 1 of 3"><title>Why did I use RAG rather than fine tuning for SudoChat? | Part 1 | SudoChat KB</title></head><body data-source-id="sudochat_mvp_18" data-perspective="first_person"><p><a href="./">Knowledge Base</a> · <a href="18-why-i-used-rag-not-fine-tuning-part-2.html">Next part →</a></p><h1>Why did I use RAG rather than fine tuning for SudoChat?</h1><p><strong>Author:</strong> Mustafa Siddiqui · <strong>Part:</strong> 1 of 3 · <strong>Recruiter question:</strong> Why did Mustafa use RAG rather than fine tuning for SudoChat?</p><p><strong>Evidence rule:</strong> This is my first-person authored source material. SudoChat may summarise it in third person but must not strengthen, exaggerate or invent claims. Limitations and Do not claim sections are hard factual boundaries.</p><pre style="white-space:pre-wrap;font-family:inherit"># 18. Why did I use RAG rather than fine tuning for SudoChat?
+
+**Author:** Mustafa Siddiqui  
+**Source type:** First-person authored response  
+**Canonical recruiter question:** Why did Mustafa use RAG rather than fine tuning for SudoChat?
+
+&gt; This source is intentionally written in my first-person perspective. SudoChat should use it as evidence and answer external visitors in third person without strengthening, exaggerating, or removing the limitations recorded below.
+
+## Direct answer
+I chose RAG because SudoChat needs to answer from a small, controlled and frequently changing evidence base, not permanently alter the behaviour or knowledge of a model.
+
+RAG makes the knowledge easier to update, audit, remove and cite. It also lets me separate the model from the evidence, which is important for a system where factual claims about my experience need to remain traceable and where unsupported claims should be refused.
+
+## Evidence
+### The SudoChat knowledge changes regularly
+
+SudoChat is built around information such as:
+
+* my work experience
+* current projects
+* technical experiments
+* research
+* Court specific application answers
+* limitations and gaps
+* evidence links
+* explicit &quot;do not claim&quot; boundaries
+
+That information is not static.
+
+A new project may be completed.
+
+A proof of concept may become a production implementation.
+
+A role may change.
+
+Additional evidence may become available.
+
+An existing answer may need to be corrected or clarified.
+
+With RAG, I can update the underlying knowledge source and make that new information available to the system without retraining or adapting the model itself.
+
+Conceptually:
+
+**Update knowledge → reindex or refresh → new information becomes retrievable**
+
+That is a much better fit for SudoChat than repeatedly changing model weights.
+
+## Why fine tuning was not the right first choice
+
+Fine tuning can be useful, but it solves a different class of problem.
+
+I see fine tuning as more appropriate when the objective is to change consistent model behaviour, style, format or task performance across many examples.
+
+For example, fine tuning might help teach a model to:
+
+* consistently produce a particular structured format
+* follow a specialist writing style
+* classify a narrow category of inputs
+* perform a repeated domain specific transformation
+* exhibit a consistent conversational behaviour
+
+SudoChat&#x27;s main problem is different.
+
+The challenge is:
+
+**&quot;What evidence about me is currently true, and what can the assistant safely claim from that evidence?&quot;**
+
+That is primarily a knowledge retrieval problem.
+
+RAG is therefore the more natural architecture.
+
+## Separation between knowledge and model
+
+One of the most important reasons I chose RAG is that it separates the knowledge source from the language model.
+
+Conceptually:
+
+**LLM = language and reasoning capability**
+
+**Knowledge base = facts the system is authorised to use**
+
+This separation gives me much greater control.
+
+If SudoChat incorrectly says that I have several years of Copilot Studio experience, I can inspect:
+
+* what was retrieved
+* which knowledge source contained the claim
+* whether the retrieved evidence supported the response
+* whether the system instructions were followed
+
+That is much easier to reason about than trying to determine whether a fact has become embedded somewhere in adapted model weights.
+
+## Evidence and citations
+
+SudoChat is intended to provide evidence based answers.
+
+RAG naturally supports that architecture because the system retrieves the source material used to construct the response.
+
+For example:
+
+**Question:**
+What government experience do I have?
+
+The system could retrieve knowledge entries concerning:
+
+* Home Affairs
+* ASD
+* DFAT
+* Defence
+* Services Australia
+* Canberra Hospital
+* Australian Space Agency related work
+
+The answer can then be constructed from those sources.
+
+Where appropriate, the user can also be directed back to supporting evidence.
+
+Fine tuning does not inherently provide this provenance.
+
+A fine tuned model may generate a correct fact, but it is much harder to answer:
+
+**&quot;Which source did that claim come from?&quot;**
+
+For SudoChat, I consider provenance important.
+
+## Correcting information
+
+RAG also makes correction straightforward.
+
+Suppose a knowledge entry accidentally states that I was directly employed by Home Affairs.
+
+That claim could be corrected to:
+
+**I supported a Home Affairs environment through Unisys.**
+
+With RAG, the source can be updated.
+
+The system does not need to unlearn a fact encoded through a training process.
+
+That distinction matters for enterprise knowledge systems, where information changes continuously.
+
+## Deleting information
+
+I also considered removal important.
+
+If a document should no longer be used, it can be:
+
+* removed
+* archived
+* marked as outdated
+* excluded from retrieval
+
+That gives the system a much clearer knowledge lifecycle.
+
+With information embedded through fine tuning, confidently proving that a particular training example no longer influences the model is more difficult.
+
+For a controlled enterprise system, I prefer having that separation.
+
+## Source authority
+
+RAG also provides a mechanism for distinguishing between sources.
+
+Not every document should have equal authority.
+
+For example, SudoChat can distinguish conceptually between:
+
+**verified professional evidence**
+
+and
+
+**an informal project description**
+
+Similarly, a Court implementation might distinguish between:
+
+**current approved policy**
+
+**archived policy**
+
+**informal guidance**
+
+**public website content**
+
+**internal procedure**
+
+Metadata can then help control what is retrieved and prioritised.
+
+That kind of source governance is fundamental to enterprise knowledge systems.</pre><hr><p><a href="./">Knowledge Base</a> · <a href="18-why-i-used-rag-not-fine-tuning-part-2.html">Next part →</a></p><p>© 2026 Mustafa Siddiqui. Independent portfolio proof of concept. Not affiliated with or endorsed by the Federal Courts. Not legal advice.</p></body></html>
