@@ -1,0 +1,188 @@
+<!doctype html><html lang="en-AU"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="index,follow"><meta name="author" content="Mustafa Siddiqui"><meta name="description" content="First-person authored SudoChat evidence: How would Mustafa approach designing AI for the Federal Courts?, part 2 of 4"><title>How would I approach designing AI for the Federal Courts? | Part 2 | SudoChat KB</title></head><body data-source-id="sudochat_mvp_16" data-perspective="first_person"><p><a href="16-how-i-would-design-ai-for-federal-courts.html">← Previous part</a> · <a href="./">Knowledge Base</a> · <a href="16-how-i-would-design-ai-for-federal-courts-part-3.html">Next part →</a></p><h1>How would I approach designing AI for the Federal Courts?</h1><p><strong>Author:</strong> Mustafa Siddiqui · <strong>Part:</strong> 2 of 4 · <strong>Recruiter question:</strong> How would Mustafa approach designing AI for the Federal Courts?</p><p><strong>Evidence rule:</strong> This is my first-person authored source material. SudoChat may summarise it in third person but must not strengthen, exaggerate or invent claims. Limitations and Do not claim sections are hard factual boundaries.</p><pre style="white-space:pre-wrap;font-family:inherit">## 6. Apply least privilege
+
+I would design Court agents around the principle that an AI system should receive only the access necessary to complete its task.
+
+For example:
+
+If an agent only needs to retrieve approved policy documents, it should not receive permission to edit them.
+
+If an assistant only needs information from one repository, it should not receive access across every SharePoint site.
+
+If a user cannot access a document directly, the AI should not become a mechanism for bypassing that restriction.
+
+Conceptually:
+
+**User identity
+→ existing permissions
+→ agent
+→ permitted information**
+
+not:
+
+**Agent has broad organisational access
+→ decides what the user should probably see**
+
+My enterprise experience with Active Directory, endpoint management, Microsoft platforms and secured government environments makes identity and permissions a central part of how I think about AI architecture.
+
+## 7. Protect sensitive information before it reaches the model
+
+My work exploring privacy preserving government chatbot architecture strongly influences how I would approach Court AI.
+
+Users make mistakes.
+
+Someone may paste:
+
+* personal information
+* banking information
+* identifiers
+* confidential correspondence
+* protected Court information
+
+into an AI interface without understanding the consequences.
+
+A responsible architecture should therefore not depend entirely on a warning saying:
+
+**&quot;Please do not enter sensitive information.&quot;**
+
+Where appropriate, I would investigate controls such as:
+
+**Input
+→ sensitive information detection
+→ classification or redaction
+→ policy check
+→ approved AI processing**
+
+This could include:
+
+* data minimisation
+* redaction
+* DLP controls
+* restricted connectors
+* retention controls
+* encryption
+* access control
+* logging appropriate to the sensitivity of the system
+
+The Federal Court&#x27;s current Practice Note specifically identifies confidential and protected information as requiring particular caution when generative AI is used.
+
+## 8. Design for hallucination and uncertainty
+
+I would assume from the beginning that an LLM can be wrong.
+
+The architecture therefore needs to account for that.
+
+For a Court knowledge system:
+
+**Question
+→ retrieve approved sources
+→ sufficient evidence?**
+
+If yes:
+
+**generate a grounded response with evidence**
+
+If no:
+
+**do not manufacture an answer**
+
+The system could instead respond that sufficient information could not be found and direct the user to an appropriate authoritative source or person.
+
+The Federal Court&#x27;s current Generative AI Practice Note explicitly warns that generative AI may produce inaccurate, fictitious or plainly wrong material, while requiring users to understand its capabilities and limitations.
+
+That makes uncertainty handling a design requirement rather than an optional feature.
+
+## 9. Design human oversight into the workflow
+
+I would distinguish between AI assistance and AI authority.
+
+For low risk tasks:
+
+**AI → user**
+
+may be acceptable.
+
+For more consequential tasks:
+
+**AI → human review → action**
+
+would be more appropriate.
+
+For example, an agent might:
+
+* prepare a draft
+* retrieve documents
+* organise information
+* identify missing fields
+* create a proposed chronology
+
+but a person remains responsible for confirming the result.
+
+For highly consequential tasks, I may recommend that AI not perform the task at all.
+
+My principle would remain:
+
+**Automate the burden, not the responsibility.**
+
+## 10. Build a bounded proof of concept
+
+I would not begin with a whole of Court AI transformation.
+
+I would prefer a narrow use case with:
+
+* a defined group of users
+* controlled information
+* clearly measurable benefit
+* low consequence of failure
+* straightforward rollback
+* strong human oversight
+
+For example, a first proof of concept might be an internal knowledge assistant using a small collection of approved technology or administrative documents.
+
+Rather than connecting it immediately to every Court repository, I would intentionally restrict the experiment.
+
+This makes it easier to answer:
+
+* Does retrieval work?
+* Can users trust the citations?
+* How often does it hallucinate?
+* Does it actually save time?
+* What questions cause problems?
+* Do users understand its limitations?
+* Does it refuse appropriately?
+
+Only if the evidence supports expansion would the scope increase.
+
+## 11. Create an evaluation framework
+
+I would not judge an AI system by demonstrating five successful prompts in a meeting.
+
+I would develop a test set with the people who understand the subject.
+
+That could include:
+
+* common questions
+* unusual questions
+* ambiguous questions
+* questions with no answer
+* outdated documents
+* conflicting documents
+* fictitious authorities
+* sensitive information
+* prompt injection attempts
+* attempts to obtain information without permission
+* requests outside the system&#x27;s intended purpose
+
+Metrics might include:
+
+* grounded answer accuracy
+* retrieval precision
+* citation correctness
+* unsupported claim rate
+* appropriate refusal rate
+* inappropriate refusal rate
+* response time
+* user satisfaction
+* time saved
+* security failures
+
+A prototype would need to demonstrate improvement against defined criteria before I recommended broader deployment.</pre><hr><p><a href="16-how-i-would-design-ai-for-federal-courts.html">← Previous part</a> · <a href="./">Knowledge Base</a> · <a href="16-how-i-would-design-ai-for-federal-courts-part-3.html">Next part →</a></p><p>© 2026 Mustafa Siddiqui. Independent portfolio proof of concept. Not affiliated with or endorsed by the Federal Courts. Not legal advice.</p></body></html>
