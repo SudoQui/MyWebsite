@@ -1,0 +1,217 @@
+<!doctype html><html lang="en-AU"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="index,follow"><meta name="author" content="Mustafa Siddiqui"><meta name="description" content="First-person authored SudoChat evidence: How would Mustafa approach designing AI for the Federal Courts?, part 3 of 4"><title>How would I approach designing AI for the Federal Courts? | Part 3 | SudoChat KB</title></head><body data-source-id="sudochat_mvp_16" data-perspective="first_person"><p><a href="16-how-i-would-design-ai-for-federal-courts-part-2.html">← Previous part</a> · <a href="./">Knowledge Base</a> · <a href="16-how-i-would-design-ai-for-federal-courts-part-4.html">Next part →</a></p><h1>How would I approach designing AI for the Federal Courts?</h1><p><strong>Author:</strong> Mustafa Siddiqui · <strong>Part:</strong> 3 of 4 · <strong>Recruiter question:</strong> How would Mustafa approach designing AI for the Federal Courts?</p><p><strong>Evidence rule:</strong> This is my first-person authored source material. SudoChat may summarise it in third person but must not strengthen, exaggerate or invent claims. Limitations and Do not claim sections are hard factual boundaries.</p><pre style="white-space:pre-wrap;font-family:inherit">## 12. Red team the system
+
+I would actively try to break the system.
+
+I would test questions such as:
+
+* Can I make it ignore its instructions?
+* Can I retrieve information belonging to another user?
+* Can I make it disclose its system prompt?
+* Can hidden instructions inside a retrieved document influence the agent?
+* Can I convince it to fabricate a policy?
+* Can I make an agent execute an inappropriate action?
+* Can I overwhelm its retrieval with irrelevant information?
+* Can a malicious document alter its behaviour?
+
+My experimentation with agentic security tools has reinforced the value of thinking about AI from the attacker&#x27;s perspective as well as the user&#x27;s perspective.
+
+Security testing should occur before the public or Court staff discover those weaknesses themselves.
+
+## 13. Design the user experience around trust
+
+I would also pay considerable attention to what the user sees.
+
+A responsible Court AI interface should make clear:
+
+* that the user is interacting with AI
+* what the system is intended to do
+* what it cannot do
+* where an answer came from
+* when information is uncertain
+* when a human should be contacted
+
+Confidence should come from evidence, not from making the chatbot sound more authoritative.
+
+For example, I would rather display:
+
+**&quot;I found this answer in Policy X, section 4.2.&quot;**
+
+than:
+
+**&quot;According to Federal Court policy...&quot;**
+
+with no visible evidence.
+
+## 14. Roll out gradually
+
+If the proof of concept performs well, I would expand deliberately.
+
+A possible progression could be:
+
+**Stage 1: Sandbox**
+
+Synthetic or non sensitive information.
+
+**Stage 2: Controlled pilot**
+
+Small group of authorised internal users.
+
+**Stage 3: Limited production**
+
+A bounded use case with monitoring.
+
+**Stage 4: Broader adoption**
+
+Only after evidence demonstrates that the system is useful, secure and reliable.
+
+At each stage, I would expect the system to be capable of being stopped if the evidence changes.
+
+## 15. Monitor after deployment
+
+Deployment would not be the end of the AI project.
+
+Models change.
+
+Knowledge changes.
+
+Policies change.
+
+Users discover new behaviours.
+
+Connectors change.
+
+Attack techniques change.
+
+I would therefore monitor areas such as:
+
+* hallucination rates
+* retrieval quality
+* unusual usage
+* inappropriate prompts
+* access patterns
+* user feedback
+* system failures
+* security incidents
+* outdated knowledge
+* model changes
+
+The Federal Court&#x27;s AI Transparency Statement similarly describes ongoing monitoring and control as part of ensuring AI use remains appropriate.
+
+## Example Federal Court architecture
+For a hypothetical internal Court knowledge assistant, I might initially conceptualise the system as:
+
+**Court staff member**
+
+↓
+
+**Microsoft Entra ID authentication**
+
+↓
+
+**Copilot Studio**
+
+↓
+
+**Identity and permission check**
+
+↓
+
+**Approved knowledge sources**
+
+↓
+
+**Retrieval and ranking**
+
+↓
+
+**Evidence threshold**
+
+↓
+
+**LLM generates grounded response**
+
+↓
+
+**Citation validation**
+
+↓
+
+**Response with sources**
+
+↓
+
+**Logging, evaluation and monitoring**
+
+If the evidence threshold is not met:
+
+**No reliable evidence
+→ safe refusal
+→ authoritative source or human escalation**
+
+If an agent needed to perform an action:
+
+**User request**
+
+↓
+
+**Authorisation**
+
+↓
+
+**Agent reasoning**
+
+↓
+
+**Approved tool**
+
+↓
+
+**Human approval where required**
+
+↓
+
+**Execution**
+
+↓
+
+**Audit log**
+
+The exact architecture would depend on Court infrastructure and governance. I would not assume this hypothetical design represents the Court&#x27;s current technical environment.
+
+## Evidence
+My previous work provides evidence for different parts of this approach.
+
+At **Nova Systems**, multidisciplinary rover engineering taught me to think about software as one component of a larger system.
+
+At **Unisys**, government enterprise work taught me about identity, endpoints, security, existing infrastructure and operational constraints.
+
+At **Xaana.AI**, document intelligence work gave me practical exposure to AI pipelines rather than treating AI models as standalone products.
+
+At **DXC**, the document approval automation demonstrated my willingness to choose conventional automation when it was sufficient.
+
+The Northern Territory illegal dumping project reinforced my belief that the problem and the people affected should be understood before proposing an AI intervention.
+
+My privacy preserving chatbot work strengthened my understanding of data protection and the behaviour of real users.
+
+My agent experimentation has taught me that connecting AI to tools increases both usefulness and risk.
+
+SudoChat is now allowing me to explore these principles in a Copilot Studio and RAG environment.
+
+Together, those experiences explain why I would approach Court AI as a **systems engineering problem**, not simply a chatbot configuration task.
+
+## Relevance to the Federal Courts
+This approach aligns closely with the Federal Court&#x27;s present position on AI.
+
+The Court recognises that generative AI may increase efficiency, reduce costs and enhance access to justice, while also emphasising that it must be used responsibly and with due care because inappropriate use can damage the administration of justice and public confidence.
+
+The Federal Court&#x27;s July 2026 AI Transparency Statement also emphasises cautious adoption, data security, responsible handling of personal information, governance, monitoring and staff awareness.
+
+I would therefore not define success as:
+
+**&quot;How many AI agents did we deploy?&quot;**
+
+I would define success as:
+
+**&quot;Did we solve a genuine Court problem, can we demonstrate that the system is safe and useful, and are the people responsible for the process still appropriately in control?&quot;**
+
+That is how I would approach designing AI for the Federal Courts.</pre><hr><p><a href="16-how-i-would-design-ai-for-federal-courts-part-2.html">← Previous part</a> · <a href="./">Knowledge Base</a> · <a href="16-how-i-would-design-ai-for-federal-courts-part-4.html">Next part →</a></p><p>© 2026 Mustafa Siddiqui. Independent portfolio proof of concept. Not affiliated with or endorsed by the Federal Courts. Not legal advice.</p></body></html>
