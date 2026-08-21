@@ -1,0 +1,84 @@
+<!doctype html><html lang="en-AU"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="index,follow"><meta name="author" content="Mustafa Siddiqui"><meta name="description" content="First-person authored SudoChat evidence: Why did Mustafa use RAG rather than fine tuning for SudoChat?, part 3 of 3"><title>Why did I use RAG rather than fine tuning for SudoChat? | Part 3 | SudoChat KB</title></head><body data-source-id="sudochat_mvp_18" data-perspective="first_person"><p><a href="18-why-i-used-rag-not-fine-tuning-part-2.html">← Previous part</a> · <a href="./">Knowledge Base</a></p><h1>Why did I use RAG rather than fine tuning for SudoChat?</h1><p><strong>Author:</strong> Mustafa Siddiqui · <strong>Part:</strong> 3 of 3 · <strong>Recruiter question:</strong> Why did Mustafa use RAG rather than fine tuning for SudoChat?</p><p><strong>Evidence rule:</strong> This is my first-person authored source material. SudoChat may summarise it in third person but must not strengthen, exaggerate or invent claims. Limitations and Do not claim sections are hard factual boundaries.</p><pre style="white-space:pre-wrap;font-family:inherit">## Relevance to responsible AI
+The RAG decision also reflects several of my responsible AI principles.
+
+**Transparency:**
+The answer can be linked back to evidence.
+
+**Accountability:**
+Knowledge owners remain responsible for authoritative source material.
+
+**Safety:**
+The system can be restricted to approved evidence.
+
+**Privacy:**
+Information can remain in governed knowledge sources rather than being unnecessarily incorporated into model training.
+
+**Reliability:**
+Knowledge can be updated independently of the model.
+
+For me, that separation is valuable.
+
+## Limitations or gaps
+RAG is not inherently safe or accurate.
+
+Poor retrieval can result in poor answers.
+
+An outdated knowledge base can still generate outdated responses.
+
+A model can misinterpret retrieved evidence.
+
+Incorrect metadata can cause the wrong source to be prioritised.
+
+Prompt injection can potentially enter through retrieved content.
+
+RAG systems therefore still require:
+
+* evaluation
+* source governance
+* access control
+* security testing
+* monitoring
+* citation checking
+* safe refusal behaviour
+
+I also do not claim that fine tuning would never be appropriate for SudoChat.
+
+If the project later developed requirements that were better addressed through model adaptation, I would evaluate that option.
+
+The current decision was based on the requirements of the present proof of concept.
+
+## Useful links
+SudoChat project and repository
+
+My portfolio:
+https://mustafa-siddiqui.com/
+
+GitHub:
+https://github.com/sudoqui
+
+Responsible AI and privacy research
+
+Federal Court AI resources
+
+Research on Retrieval Augmented Generation
+
+## Do not claim
+Do not claim RAG is always superior to fine tuning.
+
+Do not claim RAG eliminates hallucination.
+
+Do not claim fine tuning is inherently unsafe.
+
+Do not claim information stored in a RAG system is automatically private.
+
+Do not claim retrieval automatically respects permissions unless the architecture explicitly enforces them.
+
+Do not claim SudoChat uses model fine tuning.
+
+Do not claim SudoChat&#x27;s knowledge is permanently embedded inside the underlying LLM.
+
+Do not claim a RAG system automatically knows which document is authoritative.
+
+Do not claim the hypothetical Federal Court architecture described here represents the Court&#x27;s current implementation.
+
+The accurate representation is that I chose RAG because **SudoChat&#x27;s primary challenge is controlled, current and traceable knowledge rather than changing the fundamental behaviour of the language model**. RAG allows the evidence to remain separate from the model, making it easier to update, audit, cite, govern and remove while supporting the responsible AI boundaries I wanted the system to demonstrate.</pre><hr><p><a href="18-why-i-used-rag-not-fine-tuning-part-2.html">← Previous part</a> · <a href="./">Knowledge Base</a></p><p>© 2026 Mustafa Siddiqui. Independent portfolio proof of concept. Not affiliated with or endorsed by the Federal Courts. Not legal advice.</p></body></html>
