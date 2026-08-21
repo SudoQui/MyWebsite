@@ -1,0 +1,66 @@
+<!doctype html><html lang="en-AU"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="index,follow"><meta name="author" content="Mustafa Siddiqui"><meta name="description" content="First-person authored SudoChat evidence: How does SudoChat know when it does not have enough evidence to answer?, part 3 of 3"><title>How does SudoChat know when it does not have enough evidence to answer? | Part 3 | SudoChat KB</title></head><body data-source-id="sudochat_mvp_19" data-perspective="first_person"><p><a href="19-how-sudochat-handles-insufficient-evidence-part-2.html">← Previous part</a> · <a href="./">Knowledge Base</a></p><h1>How does SudoChat know when it does not have enough evidence to answer?</h1><p><strong>Author:</strong> Mustafa Siddiqui · <strong>Part:</strong> 3 of 3 · <strong>Recruiter question:</strong> How does SudoChat know when it does not have enough evidence to answer?</p><p><strong>Evidence rule:</strong> This is my first-person authored source material. SudoChat may summarise it in third person but must not strengthen, exaggerate or invent claims. Limitations and Do not claim sections are hard factual boundaries.</p><pre style="white-space:pre-wrap;font-family:inherit">## Why this matters to me
+I believe one of the most important misconceptions about AI is that a useful assistant should answer as many questions as possible.
+
+For high trust systems, that is the wrong metric.
+
+An assistant that answers 100 percent of questions but invents information is less useful than one that answers 80 percent accurately and clearly identifies the remaining 20 percent as unsupported.
+
+The appropriate balance depends on the use case, but the principle remains:
+
+**uncertainty should be visible.**
+
+This is one of the ideas SudoChat was designed to demonstrate.
+
+## Limitations or gaps
+SudoChat cannot literally &quot;know&quot; with certainty that every retrieved fact is correct.
+
+Its ability to assess evidence depends on:
+
+* the quality of the knowledge base
+* retrieval quality
+* system instructions
+* model behaviour
+* metadata
+* evaluation controls
+
+A poor or incorrect source can still produce a poor answer.
+
+Retrieval scores are also not the same as factual confidence.
+
+I therefore do not claim that SudoChat has solved hallucination or uncertainty detection.
+
+The current proof of concept demonstrates the design principle, while more mature implementations would require systematic retrieval thresholds, validation and evaluation.
+
+## Useful links
+SudoChat project and repository
+
+SudoChat knowledge base
+
+My portfolio:
+https://mustafa-siddiqui.com/
+
+GitHub:
+https://github.com/sudoqui
+
+Federal Court Generative Artificial Intelligence Practice Note
+
+Responsible AI and hallucination research
+
+## Do not claim
+Do not claim SudoChat can determine truth with certainty.
+
+Do not claim a high retrieval similarity score guarantees factual accuracy.
+
+Do not claim RAG eliminates hallucination.
+
+Do not claim SudoChat currently has a mathematically perfect confidence score for every response.
+
+Do not claim every unsupported question will always be detected.
+
+Do not claim a retrieved source is automatically authoritative.
+
+Do not claim SudoChat&#x27;s evidence threshold architecture is already equivalent to a production Federal Court implementation.
+
+Do not claim refusing to answer automatically makes an AI system safe.
+
+The accurate representation is that SudoChat is designed around an **evidence first principle**: retrieve relevant knowledge, determine whether that knowledge actually supports the requested claim, respect explicit limitations and negative boundaries, and when the evidence is not sufficient, prefer an honest limitation or refusal over an unsupported answer.</pre><hr><p><a href="19-how-sudochat-handles-insufficient-evidence-part-2.html">← Previous part</a> · <a href="./">Knowledge Base</a></p><p>© 2026 Mustafa Siddiqui. Independent portfolio proof of concept. Not affiliated with or endorsed by the Federal Courts. Not legal advice.</p></body></html>
