@@ -1,0 +1,179 @@
+<!doctype html><html lang="en-AU"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="index,follow"><meta name="author" content="Mustafa Siddiqui"><meta name="description" content="First-person authored SudoChat evidence: How would Mustafa approach designing AI for the Federal Courts?, part 1 of 4"><title>How would I approach designing AI for the Federal Courts? | Part 1 | SudoChat KB</title></head><body data-source-id="sudochat_mvp_16" data-perspective="first_person"><p><a href="./">Knowledge Base</a> · <a href="16-how-i-would-design-ai-for-federal-courts-part-2.html">Next part →</a></p><h1>How would I approach designing AI for the Federal Courts?</h1><p><strong>Author:</strong> Mustafa Siddiqui · <strong>Part:</strong> 1 of 4 · <strong>Recruiter question:</strong> How would Mustafa approach designing AI for the Federal Courts?</p><p><strong>Evidence rule:</strong> This is my first-person authored source material. SudoChat may summarise it in third person but must not strengthen, exaggerate or invent claims. Limitations and Do not claim sections are hard factual boundaries.</p><pre style="white-space:pre-wrap;font-family:inherit"># 16. How would I approach designing AI for the Federal Courts?
+
+**Author:** Mustafa Siddiqui  
+**Source type:** First-person authored response  
+**Canonical recruiter question:** How would Mustafa approach designing AI for the Federal Courts?
+
+&gt; This source is intentionally written in my first-person perspective. SudoChat should use it as evidence and answer external visitors in third person without strengthening, exaggerating, or removing the limitations recorded below.
+
+## Direct answer
+I would start with the Court problem, not the AI product.
+
+I would first understand the users, workflow, information, risks and governance requirements, then determine whether AI is actually the right solution. If it is, I would favour a bounded proof of concept using authoritative knowledge, least privilege access, human oversight, measurable evaluation and clear failure behaviour before considering broader deployment.
+
+My approach would be:
+
+**understand → govern → design → prototype → test → evaluate → deploy gradually → monitor**
+
+## 1. Understand the Court before designing the AI
+
+My first step would be discovery.
+
+I would not arrive at the Federal Courts with a collection of prebuilt AI agents and start looking for somewhere to deploy them.
+
+I would spend time with the people performing the work.
+
+That could include:
+
+* judicial support staff
+* registrars
+* registry staff
+* corporate services
+* IT teams
+* cyber security
+* privacy specialists
+* records and information management
+* legal and policy specialists
+* enterprise architects
+* service desk teams
+* other users affected by the proposed system
+
+I would ask:
+
+* What is the current process?
+* Where does time get lost?
+* What frustrates users?
+* Which parts require professional judgement?
+* Which parts are repetitive?
+* What information is used?
+* Which sources are authoritative?
+* What happens when a mistake occurs?
+* What systems already support the workflow?
+* What is the consequence if the proposed AI is wrong?
+
+This follows a principle I have repeatedly applied in my own engineering work:
+
+**Technology should follow the problem. The problem should not be invented to justify the technology.**
+
+## 2. Determine whether AI is actually necessary
+
+Once the problem is understood, I would decide whether AI is the appropriate tool.
+
+The answer may be:
+
+**Copilot Studio**
+
+It may be:
+
+**Power Automate**
+
+It may be:
+
+**a conventional search system**
+
+It may be:
+
+**a deterministic software integration**
+
+Or it may be:
+
+**do not automate this process.**
+
+My DXC document approval project is a good example of this approach.
+
+The process involved hours of repetitive manual activity, but it did not require generative AI.
+
+SharePoint and Power Automate were sufficient.
+
+I consider selecting the simplest appropriate technology an important part of responsible engineering.
+
+## 3. Classify the risk of the use case
+
+Not every Court AI system should receive the same level of governance.
+
+I would classify potential projects based on factors such as:
+
+* sensitivity of the information
+* consequence of an incorrect output
+* whether the public interacts with the system
+* whether the system only retrieves information or can take actions
+* whether the output could affect someone&#x27;s rights
+* whether judicial or professional judgement is involved
+* whether personal or confidential information is processed
+* whether the result can be reversed
+* whether meaningful human review exists
+
+A low consequence internal productivity assistant should not be treated identically to a system interacting with case information.
+
+Likewise, a read only knowledge assistant creates a different risk profile from an autonomous agent capable of modifying records.
+
+The Federal Court&#x27;s current AI Transparency Statement itself describes a cautious approach to AI adoption, emphasising public sector data security, responsible handling of personal information, governance, logging, monitoring and ongoing review.
+
+My design approach would align with that philosophy.
+
+## 4. Establish governance before the prototype grows
+
+I would define the boundaries before giving an AI system capabilities.
+
+For each proof of concept, I would want clear answers to:
+
+* What is the system allowed to do?
+* What is explicitly prohibited?
+* Who owns the system?
+* Who approves the use case?
+* What information can it access?
+* Who can use it?
+* What information can leave the environment?
+* What gets logged?
+* How long is data retained?
+* What actions require human approval?
+* How can the system be disabled?
+* How will incidents be investigated?
+* How will its performance be reviewed?
+
+I believe this is particularly important with agents.
+
+A chatbot that generates text creates one level of risk.
+
+An agent that can access SharePoint, send messages, create records or interact with enterprise systems creates another.
+
+The stronger the capability, the stronger the controls need to become.
+
+## 5. Design around authoritative information
+
+For a Court knowledge assistant, I would favour retrieval augmented generation over allowing the model to rely primarily on its general pretrained knowledge.
+
+Conceptually:
+
+**Court user
+→ authenticated identity
+→ Copilot Studio
+→ authorised Court knowledge
+→ retrieval
+→ relevant evidence
+→ LLM
+→ grounded response
+→ citations**
+
+Possible knowledge sources could include approved material such as:
+
+* Court policies
+* internal procedures
+* practice notes
+* operational documentation
+* approved SharePoint repositories
+* technical documentation
+* public Court guidance
+
+The exact sources would be determined by the Court&#x27;s information owners.
+
+I would also establish a hierarchy of authority.
+
+A current approved policy should not be treated the same way as:
+
+* an archived procedure
+* an informal document
+* an outdated version
+* an unverified note
+
+The retrieval architecture should understand those distinctions rather than relying entirely on semantic similarity.</pre><hr><p><a href="./">Knowledge Base</a> · <a href="16-how-i-would-design-ai-for-federal-courts-part-2.html">Next part →</a></p><p>© 2026 Mustafa Siddiqui. Independent portfolio proof of concept. Not affiliated with or endorsed by the Federal Courts. Not legal advice.</p></body></html>
