@@ -1,0 +1,13 @@
+{
+  "name": "sudochat-gateway",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Server-side token gateway for the SudoChat Copilot Studio Direct Line integration.",
+  "main": "src/functions/*.js",
+  "scripts": {
+    "start": "func start"
+  },
+  "dependencies": {
+    "@azure/functions": "^4.7.2"
+  }
+}
