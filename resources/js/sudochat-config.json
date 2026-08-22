@@ -1,4 +1,4 @@
 {
-  "tokenEndpoint": "",
+  "tokenEndpoint": "https://sudochat-gateway-ms-geh3fkcyepctf3h2.australiaeast-01.azurewebsites.net/api/token",
   "gatewayEndpoint": ""
 }
