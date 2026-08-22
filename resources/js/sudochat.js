@@ -1,9 +1,15 @@
 (() => {
-  const config = {
-    endpoint: window.SUDOCHAT_ENDPOINT || "",
+  const baseConfig = {
+    gatewayEndpoint: window.SUDOCHAT_ENDPOINT || "",
+    tokenEndpoint: "",
     githubRepo: "SudoQui/MyWebsite",
     githubPath: "sudochat.html"
   };
+
+  const DIRECT_LINE_BASE = "https://directline.botframework.com/v3/directline";
+  const CONFIG_PATH = "resources/js/sudochat-config.json";
+  const RESPONSE_TIMEOUT_MS = 60000;
+  const POLL_INTERVAL_MS = 750;
 
   const shell = document.getElementById("sudochat-shell");
   const chatView = document.getElementById("chat-view");
@@ -17,9 +23,19 @@
   const componentButtons = document.querySelectorAll("[data-component]");
   const componentSummary = document.getElementById("component-summary");
 
+  const directLine = {
+    token: "",
+    conversationId: "",
+    watermark: null,
+    expiresAt: 0,
+    userId: createUserId()
+  };
+
+  let runtimeConfigPromise = null;
+
   const architectureDetails = {
     frontend: "Custom web UI on mustafa-siddiqui.com. The public portfolio still works if the AI service is unavailable.",
-    gateway: "A server-side gateway validates requests, applies limits and keeps Copilot credentials out of browser code.",
+    gateway: "The MVP uses a short-lived Direct Line conversation token issued by Copilot Studio. Direct Line secrets are never stored in browser code. A server-side gateway can add rate limits and additional controls later.",
     agent: "Copilot Studio handles conversational orchestration and grounded response behaviour.",
     knowledge: "Curated public knowledge covers Mustafa, projects, authored answers, role research and supporting evidence.",
     guardrails: "The agent abstains when evidence is weak, rejects false premises and keeps Court proposals clearly independent.",
@@ -80,22 +96,25 @@
     setBusy(true);
 
     try {
-      if (!config.endpoint) {
-        addMessage("assistant", "SudoChat MVP", "The interface is live, but the grounded Copilot backend is not connected yet. This fallback is deliberately transparent rather than pretending to be an AI response.");
+      const config = await getRuntimeConfig();
+      if (!config.gatewayEndpoint && !config.tokenEndpoint) {
+        addMessage("assistant", "SudoChat MVP", "The interface is ready for the live Copilot agent, but its public token endpoint has not been configured yet.");
         return;
       }
 
-      const response = await fetch(config.endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "omit",
-        body: JSON.stringify({ message: question })
-      });
-      if (!response.ok) throw new Error(`Chat request failed with status ${response.status}`);
-      const payload = await response.json();
-      addMessage("assistant", payload.provenance || "Grounded response", payload.answer || "No grounded answer was returned.", Array.isArray(payload.sources) ? payload.sources : []);
+      const payload = config.gatewayEndpoint
+        ? await requestViaGateway(config.gatewayEndpoint, question)
+        : await requestViaDirectLine(config.tokenEndpoint, question);
+
+      addMessage(
+        "assistant",
+        payload.provenance || "Grounded response",
+        payload.answer || "No grounded answer was returned.",
+        Array.isArray(payload.sources) ? payload.sources : []
+      );
     } catch (error) {
-      console.error(error);
+      console.error("SudoChat request failed", error);
+      resetDirectLineSession();
       addMessage("assistant", "Service unavailable", "The live agent could not be reached. The portfolio and Engine Room remain available while the AI service is unavailable.");
     } finally {
       setBusy(false);
@@ -103,14 +122,255 @@
     }
   });
 
+  async function getRuntimeConfig() {
+    if (!runtimeConfigPromise) {
+      runtimeConfigPromise = (async () => {
+        const inline = window.SUDOCHAT_CONFIG || {};
+        let fileConfig = {};
+
+        try {
+          const response = await fetch(CONFIG_PATH, { cache: "no-store" });
+          if (response.ok) fileConfig = await response.json();
+        } catch (error) {
+          console.warn("SudoChat runtime config file unavailable", error);
+        }
+
+        return {
+          ...baseConfig,
+          ...fileConfig,
+          ...inline,
+          gatewayEndpoint: inline.gatewayEndpoint || fileConfig.gatewayEndpoint || baseConfig.gatewayEndpoint || "",
+          tokenEndpoint: inline.tokenEndpoint || fileConfig.tokenEndpoint || ""
+        };
+      })();
+    }
+
+    return runtimeConfigPromise;
+  }
+
+  async function requestViaGateway(endpoint, question) {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "omit",
+      body: JSON.stringify({ message: question })
+    });
+
+    if (!response.ok) throw new Error(`Gateway request failed with status ${response.status}`);
+    return response.json();
+  }
+
+  async function requestViaDirectLine(tokenEndpoint, question) {
+    await ensureDirectLineSession(tokenEndpoint);
+    await ensureFreshToken();
+
+    const sendResponse = await fetch(`${DIRECT_LINE_BASE}/conversations/${encodeURIComponent(directLine.conversationId)}/activities`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${directLine.token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        type: "message",
+        from: { id: directLine.userId, name: "SudoChat visitor" },
+        text: question,
+        textFormat: "plain",
+        locale: "en-AU"
+      })
+    });
+
+    if (!sendResponse.ok) throw new Error(`Direct Line send failed with status ${sendResponse.status}`);
+    return waitForAgentResponse();
+  }
+
+  async function ensureDirectLineSession(tokenEndpoint) {
+    if (directLine.token && directLine.conversationId) return;
+
+    const tokenResponse = await fetch(tokenEndpoint, {
+      method: "GET",
+      cache: "no-store",
+      credentials: "omit"
+    });
+
+    if (!tokenResponse.ok) throw new Error(`Copilot token endpoint failed with status ${tokenResponse.status}`);
+
+    const tokenPayload = await tokenResponse.json();
+    if (!tokenPayload.token) throw new Error("Copilot token endpoint did not return a Direct Line token");
+
+    directLine.token = tokenPayload.token;
+    directLine.expiresAt = Date.now() + (Number(tokenPayload.expires_in || 1800) * 1000);
+
+    const conversationResponse = await fetch(`${DIRECT_LINE_BASE}/conversations`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${directLine.token}`,
+        "Content-Type": "application/json"
+      },
+      body: "{}"
+    });
+
+    if (!conversationResponse.ok) throw new Error(`Direct Line conversation start failed with status ${conversationResponse.status}`);
+
+    const conversationPayload = await conversationResponse.json();
+    directLine.conversationId = conversationPayload.conversationId || tokenPayload.conversationId || "";
+    directLine.expiresAt = Date.now() + (Number(conversationPayload.expires_in || tokenPayload.expires_in || 1800) * 1000);
+    directLine.watermark = null;
+
+    if (!directLine.conversationId) throw new Error("Direct Line did not return a conversation ID");
+
+    await drainCurrentActivities();
+  }
+
+  async function ensureFreshToken() {
+    if (!directLine.token || !directLine.conversationId) return;
+    if (Date.now() < directLine.expiresAt - 120000) return;
+
+    const response = await fetch(`${DIRECT_LINE_BASE}/tokens/refresh`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${directLine.token}` }
+    });
+
+    if (!response.ok) throw new Error(`Direct Line token refresh failed with status ${response.status}`);
+
+    const payload = await response.json();
+    directLine.token = payload.token || directLine.token;
+    directLine.expiresAt = Date.now() + (Number(payload.expires_in || 1800) * 1000);
+  }
+
+  async function drainCurrentActivities() {
+    try {
+      const set = await getActivities();
+      if (set && set.watermark !== undefined && set.watermark !== null) directLine.watermark = set.watermark;
+    } catch (error) {
+      console.warn("Could not establish initial Direct Line watermark", error);
+    }
+  }
+
+  async function waitForAgentResponse() {
+    const deadline = Date.now() + RESPONSE_TIMEOUT_MS;
+
+    while (Date.now() < deadline) {
+      await ensureFreshToken();
+      const set = await getActivities();
+      const activities = Array.isArray(set.activities) ? set.activities : [];
+
+      if (set.watermark !== undefined && set.watermark !== null) directLine.watermark = set.watermark;
+
+      const botMessages = activities.filter((activity) => {
+        if (!activity || activity.type !== "message") return false;
+        if (activity.from && activity.from.id === directLine.userId) return false;
+        return Boolean((activity.text || "").trim() || (activity.speak || "").trim());
+      });
+
+      if (botMessages.length) {
+        const answer = botMessages
+          .map((activity) => cleanAnswerText(activity.text || activity.speak || ""))
+          .filter(Boolean)
+          .join("\n\n");
+
+        const sources = dedupeSources(botMessages.flatMap(extractSourcesFromActivity));
+
+        return {
+          provenance: "Grounded response",
+          answer,
+          sources
+        };
+      }
+
+      await delay(POLL_INTERVAL_MS);
+    }
+
+    throw new Error("Timed out waiting for Copilot Studio response");
+  }
+
+  async function getActivities() {
+    const watermark = directLine.watermark ? `?watermark=${encodeURIComponent(directLine.watermark)}` : "";
+    const response = await fetch(`${DIRECT_LINE_BASE}/conversations/${encodeURIComponent(directLine.conversationId)}/activities${watermark}`, {
+      headers: { Authorization: `Bearer ${directLine.token}` },
+      cache: "no-store"
+    });
+
+    if (!response.ok) throw new Error(`Direct Line receive failed with status ${response.status}`);
+    return response.json();
+  }
+
+  function resetDirectLineSession() {
+    directLine.token = "";
+    directLine.conversationId = "";
+    directLine.watermark = null;
+    directLine.expiresAt = 0;
+  }
+
+  function extractSourcesFromActivity(activity) {
+    const sources = [];
+    const text = String(activity.text || activity.speak || "");
+    const markdownLink = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
+    let match;
+
+    while ((match = markdownLink.exec(text)) !== null) {
+      sources.push({ label: match[1].trim() || "Evidence", url: match[2] });
+    }
+
+    (activity.attachments || []).forEach((attachment) => {
+      if (attachment && attachment.contentUrl && isAllowedUrl(attachment.contentUrl)) {
+        sources.push({ label: attachment.name || "Evidence", url: attachment.contentUrl });
+      }
+
+      if (attachment && attachment.content && typeof attachment.content === "object") {
+        collectUrlsFromObject(attachment.content, sources);
+      }
+    });
+
+    (activity.entities || []).forEach((entity) => collectUrlsFromObject(entity, sources));
+    return sources;
+  }
+
+  function collectUrlsFromObject(value, sources, depth = 0) {
+    if (!value || typeof value !== "object" || depth > 4) return;
+
+    const candidateUrl = value.url || value.contentUrl || value.uri || value.href;
+    if (typeof candidateUrl === "string" && isAllowedUrl(candidateUrl)) {
+      sources.push({
+        label: value.title || value.name || value.text || value.citation || "Evidence",
+        url: candidateUrl
+      });
+    }
+
+    Object.values(value).forEach((child) => {
+      if (child && typeof child === "object") collectUrlsFromObject(child, sources, depth + 1);
+    });
+  }
+
+  function dedupeSources(sources) {
+    const seen = new Set();
+    return sources.filter((source) => {
+      if (!source || !source.url || !isAllowedUrl(source.url)) return false;
+      const key = source.url.trim();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    }).slice(0, 4);
+  }
+
+  function cleanAnswerText(value) {
+    return String(value)
+      .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, "$1")
+      .replace(/\*\*([^*]+)\*\*/g, "$1")
+      .replace(/`([^`]+)`/g, "$1")
+      .trim();
+  }
+
   function addMessage(role, label, text, sources = []) {
     const node = document.createElement("article");
     node.className = `message ${role}`;
+
     const safeSources = sources
       .filter((source) => source && source.label && isAllowedUrl(source.url))
       .map((source) => `<a href="${escapeAttribute(source.url)}" target="_blank" rel="noreferrer">${escapeHtml(source.label)} ↗</a>`)
       .join("");
-    node.innerHTML = `<span class="message-label">${escapeHtml(label)}</span><p>${escapeHtml(text)}</p>${safeSources ? `<div class="source-list">${safeSources}</div>` : ""}`;
+
+    const safeText = escapeHtml(text).replaceAll("\n", "<br />");
+    node.innerHTML = `<span class="message-label">${escapeHtml(label)}</span><p>${safeText}</p>${safeSources ? `<div class="source-list">${safeSources}</div>` : ""}`;
     conversation.appendChild(node);
     conversation.scrollTop = conversation.scrollHeight;
   }
@@ -118,6 +378,7 @@
   function setBusy(busy) {
     sendButton.disabled = busy;
     input.disabled = busy;
+    sendButton.setAttribute("aria-busy", String(busy));
   }
 
   function resizeInput() {
@@ -129,19 +390,43 @@
     try {
       const url = new URL(value, window.location.href);
       return url.protocol === "https:" || url.protocol === "http:";
-    } catch { return false; }
+    } catch {
+      return false;
+    }
+  }
+
+  function createUserId() {
+    if (window.crypto && typeof window.crypto.randomUUID === "function") {
+      return `sudochat-${window.crypto.randomUUID()}`;
+    }
+    return `sudochat-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  }
+
+  function delay(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   function escapeHtml(value) {
-    return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
   }
 
-  function escapeAttribute(value) { return escapeHtml(value); }
+  function escapeAttribute(value) {
+    return escapeHtml(value);
+  }
 
   function formatDate(value) {
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return "Unavailable";
-    return new Intl.DateTimeFormat("en-AU", { dateStyle: "medium", timeStyle: "short", timeZone: "Australia/Sydney" }).format(date);
+    return new Intl.DateTimeFormat("en-AU", {
+      dateStyle: "medium",
+      timeStyle: "short",
+      timeZone: "Australia/Sydney"
+    }).format(date);
   }
 
   function extractLastPage(linkHeader) {
@@ -153,18 +438,28 @@
   async function loadGitHubTimeline() {
     const start = document.getElementById("project-start");
     const latest = document.getElementById("project-latest");
-    const base = `https://api.github.com/repos/${config.githubRepo}/commits?path=${encodeURIComponent(config.githubPath)}&per_page=1`;
+    const base = `https://api.github.com/repos/${baseConfig.githubRepo}/commits?path=${encodeURIComponent(baseConfig.githubPath)}&per_page=1`;
+
     try {
       const latestResponse = await fetch(base, { headers: { Accept: "application/vnd.github+json" } });
       if (!latestResponse.ok) throw new Error("GitHub timeline unavailable");
+
       const latestItems = await latestResponse.json();
       if (!latestItems.length) throw new Error("No commits found");
+
       latest.textContent = formatDate(latestItems[0].commit.committer.date);
       const lastPage = extractLastPage(latestResponse.headers.get("Link"));
-      if (!lastPage) { start.textContent = latest.textContent; return; }
+
+      if (!lastPage) {
+        start.textContent = latest.textContent;
+        return;
+      }
+
       const firstResponse = await fetch(`${base}&page=${lastPage}`, { headers: { Accept: "application/vnd.github+json" } });
       const firstItems = firstResponse.ok ? await firstResponse.json() : [];
-      start.textContent = firstItems.length ? `Started ${formatDate(firstItems[firstItems.length - 1].commit.committer.date)}` : "View GitHub history";
+      start.textContent = firstItems.length
+        ? `Started ${formatDate(firstItems[firstItems.length - 1].commit.committer.date)}`
+        : "View GitHub history";
     } catch (error) {
       console.warn(error);
       start.textContent = "View GitHub history";
