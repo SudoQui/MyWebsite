@@ -15,6 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="resources/css/sudochat.css" />
+    <link rel="stylesheet" href="resources/css/sudochat-engine.css" />
   </head>
   <body>
     <a class="skip-link" href="#chat-input">Skip to chat</a>
@@ -98,41 +99,139 @@
             <div class="engine-layout">
               <div class="engine-heading">
                 <div>
-                  <span class="engine-kicker">HOW SUDOCHAT WORKS</span>
-                  <h2>The LLM is one component, not the whole system.</h2>
+                  <span class="engine-kicker">SYSTEM ARCHITECTURE · CURRENT MVP</span>
+                  <h2>Two paths: controlled knowledge in, grounded answers out.</h2>
                 </div>
-                <p id="component-summary">Select a component to inspect its responsibility.</p>
+                <p id="component-summary">Select a component to inspect its responsibility. Solid components exist in the current portfolio MVP; dashed components represent the stronger production pattern.</p>
               </div>
 
-              <div class="engine-diagram" aria-label="Compact SudoChat architecture">
-                <button class="engine-node node-user" type="button" data-component="frontend"><span>MVP</span><strong>Custom Web UI</strong><small>Portfolio + chat</small></button>
-                <div class="connector c1" aria-hidden="true"></div>
-                <button class="engine-node node-gateway" type="button" data-component="gateway"><span>MVP</span><strong>Secure Gateway</strong><small>Validation + secrets</small></button>
-                <div class="connector c2" aria-hidden="true"></div>
-                <button class="engine-node node-agent" type="button" data-component="agent"><span>MVP</span><strong>Copilot Studio</strong><small>Orchestration</small></button>
+              <div class="engine-architecture-map" aria-label="SudoChat architecture showing knowledge ingestion and grounded query flow">
+                <section class="arch-zone arch-zone-client" aria-label="SudoChat application and controlled knowledge">
+                  <div class="arch-zone-title">SudoChat Application + Controlled Knowledge</div>
+                  <div class="arch-zone-body arch-client-body">
+                    <div class="arch-lane arch-lane-ingest">
+                      <span class="arch-lane-label">INGEST / PREPARE</span>
+                      <div class="arch-retrieval-group" aria-hidden="true"><span>approved public knowledge pipeline</span></div>
 
-                <button class="engine-node node-kb" type="button" data-component="knowledge"><span>MVP</span><strong>Knowledge Base</strong><small>Mustafa + role + evidence</small></button>
-                <button class="engine-node node-guard" type="button" data-component="guardrails"><span>MVP</span><strong>Guardrails</strong><small>Abstain + scope</small></button>
-                <button class="engine-node node-retrieval" type="button" data-component="retrieval"><span>FINAL</span><strong>Retrieval</strong><small>Hybrid search + metadata</small></button>
-                <button class="engine-node node-eval" type="button" data-component="evaluation"><span>FINAL</span><strong>Evaluation</strong><small>Grounding + injection tests</small></button>
-                <button class="engine-node node-response" type="button" data-component="response"><span>MVP</span><strong>Grounded Evidence</strong><small>Answer + source links</small></button>
+                      <div class="arch-actor">
+                        <span class="arch-person" aria-hidden="true">♙</span>
+                        <span>AI Engineer</span>
+                      </div>
+                      <div class="arch-arrow"><span class="arch-step arch-step-arrow">1</span></div>
+                      <button class="arch-node" type="button" data-component="knowledge">
+                        <span class="arch-node-icon">KB</span>
+                        <strong>Approved Evidence</strong>
+                        <small>Authored answers + public project evidence</small>
+                      </button>
+                      <div class="arch-arrow"><span class="arch-step arch-step-arrow">2</span></div>
+                      <button class="arch-node" type="button" data-component="knowledge">
+                        <span class="arch-node-icon">MD</span>
+                        <strong>Prepare Knowledge</strong>
+                        <small>Structure, metadata, boundaries and review</small>
+                      </button>
+                      <div class="arch-arrow"><span class="arch-step arch-step-arrow">3</span></div>
+                      <button class="arch-node" type="button" data-component="response">
+                        <span class="arch-node-icon">ID</span>
+                        <strong>Source Manifest</strong>
+                        <small>Stable IDs + canonical evidence destinations</small>
+                      </button>
+                      <div class="arch-arrow"></div>
+                      <button class="arch-node" type="button" data-component="knowledge">
+                        <span class="arch-node-icon">PUB</span>
+                        <strong>Published KB</strong>
+                        <small>Public, reviewable source material</small>
+                      </button>
+                    </div>
+
+                    <div class="arch-lane arch-lane-query">
+                      <span class="arch-lane-label">QUERY / RESPOND</span>
+                      <div class="arch-actor">
+                        <span class="arch-person" aria-hidden="true">♙</span>
+                        <span>Visitor</span>
+                      </div>
+                      <div class="arch-arrow"><span class="arch-step arch-step-arrow">4</span></div>
+                      <button class="arch-node" type="button" data-component="frontend">
+                        <span class="arch-node-icon">UI</span>
+                        <strong>Custom Web UI</strong>
+                        <small>Question, conversation state and rendering</small>
+                      </button>
+                      <div class="arch-arrow"></div>
+                      <button class="arch-node" type="button" data-component="gateway">
+                        <span class="arch-node-icon">AZ</span>
+                        <strong>Token Gateway</strong>
+                        <small>Server-side secret → short-lived token</small>
+                      </button>
+                      <div class="arch-arrow"><span class="arch-step arch-step-arrow">5</span></div>
+                      <button class="arch-node" type="button" data-component="agent">
+                        <span class="arch-node-icon">DL</span>
+                        <strong>Direct Line Client</strong>
+                        <small>Browser conversation transport</small>
+                      </button>
+                      <div class="arch-arrow"></div>
+                      <button class="arch-node" type="button" data-component="response">
+                        <span class="arch-node-icon">SRC</span>
+                        <strong>Citation Resolver</strong>
+                        <small>Model URLs rejected; canonical links rendered</small>
+                      </button>
+                    </div>
+
+                    <div class="arch-token-note">The Azure Function only mints a short-lived Direct Line token. After that, the browser talks to Direct Line directly; the long-lived Copilot secret never enters browser code.</div>
+                  </div>
+                </section>
+
+                <section class="arch-zone arch-zone-cloud" aria-label="Managed Microsoft AI services">
+                  <div class="arch-zone-title">Microsoft Cloud (SaaS)</div>
+                  <div class="arch-zone-body arch-cloud-body">
+                    <div class="arch-cloud-ingest">
+                      <button class="arch-node arch-cloud-node" type="button" data-component="retrieval">
+                        <span class="arch-node-icon">RAG</span>
+                        <strong>Managed Knowledge Retrieval</strong>
+                        <small>Copilot-grounded retrieval over approved sources</small>
+                      </button>
+                      <span class="arch-cloud-caption">knowledge available to the agent</span>
+                    </div>
+
+                    <div class="arch-cloud-query">
+                      <button class="arch-node arch-cloud-node" type="button" data-component="agent">
+                        <span class="arch-node-icon">CS</span>
+                        <strong>Copilot Studio</strong>
+                        <small>Conversation orchestration + grounding rules</small>
+                      </button>
+                      <div class="arch-cloud-arrow" aria-hidden="true"></div>
+                      <button class="arch-node arch-cloud-node" type="button" data-component="agent">
+                        <span class="arch-node-icon">LLM</span>
+                        <strong>Managed Language Model</strong>
+                        <small>Generates from retrieved context within agent policy</small>
+                      </button>
+                      <span class="arch-cloud-caption">grounded response returns through Direct Line</span>
+                    </div>
+                  </div>
+                </section>
+
+                <div class="arch-cross-zone arch-cross-ingest" aria-hidden="true"></div>
+                <div class="arch-cross-zone arch-cross-query" aria-hidden="true"></div>
               </div>
 
-              <div class="engine-bottom">
-                <article class="compact-card">
-                  <span>COURT AI DISCOVERY</span>
-                  <strong>Research first. Architecture second.</strong>
-                  <p>Know · infer · ask · propose.</p>
+              <div class="engine-controls-rail" aria-label="Cross-cutting controls">
+                <article class="engine-control-card">
+                  <span>GUARDRAILS</span>
+                  <strong>Scope · abstention · false-premise correction</strong>
+                  <small>20-control matrix now documented and moving into regression evaluation.</small>
                 </article>
-                <article class="compact-card timeline-card">
-                  <span>BUILT IN PUBLIC</span>
-                  <strong id="project-start">Loading project history...</strong>
-                  <p>Latest: <span id="project-latest">checking GitHub</span></p>
+                <article class="engine-control-card">
+                  <span>SECURITY</span>
+                  <strong>Secret boundary · origin checks · least privilege</strong>
+                  <small>Threat model separates public MVP controls from Court-deployment requirements.</small>
                 </article>
-                <article class="compact-card">
-                  <span>DESIGN PRINCIPLE</span>
-                  <strong>Humans authorise consequential actions.</strong>
-                  <p>Agents reason and recommend. Deterministic tools execute.</p>
+                <article class="engine-control-card">
+                  <span>EVALUATION</span>
+                  <strong>Grounding · retrieval · injection · latency</strong>
+                  <small>Model and KB changes are treated as releases that can regress quality.</small>
+                </article>
+                <article class="engine-control-card">
+                  <span>COURT DISCOVERY</span>
+                  <strong>Known · inferred · discovery required · proposed</strong>
+                  <small>Internal Court architecture is never guessed from public information.</small>
                 </article>
               </div>
             </div>
