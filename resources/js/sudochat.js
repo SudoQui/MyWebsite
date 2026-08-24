@@ -170,8 +170,6 @@
     await ensureDirectLineSession(tokenEndpoint);
     await ensureFreshToken();
 
-    // Advance past any late activity left over from a completed prior turn. This
-    // prevents a delayed response from being attached to the next user message.
     await drainCurrentActivities();
 
     updateThinkingIndicator("Retrieving grounded evidence");
@@ -285,9 +283,7 @@
 
         if (activity.type !== "message" || !text) continue;
 
-        if (userActivityId && activity.replyToId && activity.replyToId !== userActivityId) {
-          continue;
-        }
+        if (userActivityId && activity.replyToId && activity.replyToId !== userActivityId) continue;
 
         if (isProvisionalMessage(text)) {
           sawProvisional = true;
@@ -412,11 +408,11 @@
       sources.push({ label: match[1].trim() || "Source", url: match[2] });
     }
     while ((match = plainUrl.exec(text)) !== null) {
-      sources.push({ label: "Source", url: match[0] });
+      if (!isMetadataUrl(match[0])) sources.push({ label: "Source", url: match[0] });
     }
 
     (activity.attachments || []).forEach((attachment) => {
-      if (attachment && attachment.contentUrl && isAllowedUrl(attachment.contentUrl)) {
+      if (attachment && attachment.contentUrl && isAllowedUrl(attachment.contentUrl) && !isMetadataUrl(attachment.contentUrl)) {
         sources.push({ label: attachment.name || "Source", url: attachment.contentUrl });
       }
       if (attachment && attachment.content && typeof attachment.content === "object") {
@@ -437,7 +433,7 @@
     if (typeof value === "string") {
       const urls = value.match(/https?:\/\/[^\s<>)\]"']+/g) || [];
       urls.forEach((url) => {
-        if (isAllowedUrl(url)) sources.push({ label: inheritedLabel || "Source", url });
+        if (isAllowedUrl(url) && !isMetadataUrl(url)) sources.push({ label: inheritedLabel || "Source", url });
       });
       return;
     }
@@ -452,7 +448,7 @@
     const label = value.title || value.Title || value.name || value.Name || value.fileName || value.filename || value.citation || inheritedLabel || "Source";
     const candidateUrl = value.url || value.URL || value.contentUrl || value.contentURL || value.uri || value.href || value.contentLocation || value.ContentLocation || value.sourceUrl || value.sourceURL;
 
-    if (typeof candidateUrl === "string" && isAllowedUrl(candidateUrl)) {
+    if (typeof candidateUrl === "string" && isAllowedUrl(candidateUrl) && !isMetadataUrl(candidateUrl)) {
       sources.push({ label, url: candidateUrl });
     }
 
@@ -467,7 +463,7 @@
     const seen = new Set();
     return sources
       .filter((source) => {
-        if (!source || !source.url || !isAllowedUrl(source.url)) return false;
+        if (!source || !source.url || !isAllowedUrl(source.url) || isMetadataUrl(source.url)) return false;
         const key = normaliseSourceUrl(source.url);
         if (seen.has(key)) return false;
         seen.add(key);
@@ -478,6 +474,15 @@
         label: normaliseSourceLabel(source.label, source.url)
       }))
       .slice(0, 12);
+  }
+
+  function isMetadataUrl(value) {
+    try {
+      const host = new URL(value).hostname.replace(/^www\./, "").toLowerCase();
+      return host === "schema.org" || host === "adaptivecards.io" || host.endsWith("botframework.com");
+    } catch {
+      return false;
+    }
   }
 
   function normaliseSourceUrl(value) {
@@ -537,7 +542,7 @@
     const node = document.createElement("article");
     node.className = `message ${role}`;
 
-    const safeSourceObjects = sources.filter((source) => source && source.label && isAllowedUrl(source.url));
+    const safeSourceObjects = sources.filter((source) => source && source.label && isAllowedUrl(source.url) && !isMetadataUrl(source.url));
     const safeSources = safeSourceObjects
       .map((source, index) => `<a href="${escapeAttribute(source.url)}" target="_blank" rel="noreferrer">[${index + 1}] ${escapeHtml(source.label)} ↗</a>`)
       .join("");
