@@ -8,9 +8,10 @@
 
   const DIRECT_LINE_BASE = "https://directline.botframework.com/v3/directline";
   const CONFIG_PATH = "resources/js/sudochat-config.json";
-  const RESPONSE_TIMEOUT_MS = 60000;
-  const POLL_INTERVAL_MS = 750;
-  const RESPONSE_SETTLE_MS = 1200;
+  const RESPONSE_TIMEOUT_MS = 75000;
+  const POLL_INTERVAL_MS = 700;
+  const FINAL_SETTLE_MS = 2200;
+  const SHORT_FINAL_SETTLE_MS = 3500;
 
   const shell = document.getElementById("sudochat-shell");
   const chatView = document.getElementById("chat-view");
@@ -50,13 +51,11 @@
   function setView(mode) {
     const showEngine = mode === "engine";
     shell.dataset.view = showEngine ? "engine" : "chat";
-
-    if (chatView && engineView) {
-      chatView.style.pointerEvents = showEngine ? "none" : "auto";
-      engineView.style.pointerEvents = showEngine ? "auto" : "none";
-      chatView.setAttribute("aria-hidden", String(showEngine));
-      engineView.setAttribute("aria-hidden", String(!showEngine));
-    }
+    if (!chatView || !engineView) return;
+    chatView.style.pointerEvents = showEngine ? "none" : "auto";
+    engineView.style.pointerEvents = showEngine ? "auto" : "none";
+    chatView.setAttribute("aria-hidden", String(showEngine));
+    engineView.setAttribute("aria-hidden", String(!showEngine));
   }
 
   function setPrompt(text) {
@@ -135,14 +134,12 @@
       runtimeConfigPromise = (async () => {
         const inline = window.SUDOCHAT_CONFIG || {};
         let fileConfig = {};
-
         try {
           const response = await fetch(CONFIG_PATH, { cache: "no-store" });
           if (response.ok) fileConfig = await response.json();
         } catch (error) {
           console.warn("SudoChat runtime config file unavailable", error);
         }
-
         return {
           ...baseConfig,
           ...fileConfig,
@@ -152,7 +149,6 @@
         };
       })();
     }
-
     return runtimeConfigPromise;
   }
 
@@ -164,9 +160,8 @@
       credentials: "omit",
       body: JSON.stringify({ message: question })
     });
-
     if (!response.ok) throw new Error(`Gateway request failed with status ${response.status}`);
-    updateThinkingIndicator("Formulating response");
+    updateThinkingIndicator("Formulating grounded response");
     return response.json();
   }
 
@@ -174,8 +169,13 @@
     updateThinkingIndicator("Connecting to the grounded agent");
     await ensureDirectLineSession(tokenEndpoint);
     await ensureFreshToken();
-    updateThinkingIndicator("Retrieving grounded evidence");
 
+    // Advance past any late activity left over from a completed prior turn. This
+    // prevents a delayed response from being attached to the next user message.
+    await drainCurrentActivities();
+
+    updateThinkingIndicator("Retrieving grounded evidence");
+    const turnStartedAt = Date.now();
     const sendResponse = await fetch(`${DIRECT_LINE_BASE}/conversations/${encodeURIComponent(directLine.conversationId)}/activities`, {
       method: "POST",
       headers: {
@@ -194,25 +194,16 @@
     if (!sendResponse.ok) throw new Error(`Direct Line send failed with status ${sendResponse.status}`);
 
     let sendPayload = {};
-    try {
-      sendPayload = await sendResponse.json();
-    } catch {
-      sendPayload = {};
-    }
+    try { sendPayload = await sendResponse.json(); } catch { sendPayload = {}; }
 
     updateThinkingIndicator("Formulating grounded response");
-    return waitForAgentResponse(sendPayload.id || "");
+    return waitForAgentResponse(sendPayload.id || "", turnStartedAt);
   }
 
   async function ensureDirectLineSession(tokenEndpoint) {
     if (directLine.token && directLine.conversationId) return;
 
-    const tokenResponse = await fetch(tokenEndpoint, {
-      method: "GET",
-      cache: "no-store",
-      credentials: "omit"
-    });
-
+    const tokenResponse = await fetch(tokenEndpoint, { method: "GET", cache: "no-store", credentials: "omit" });
     if (!tokenResponse.ok) throw new Error(`Copilot token endpoint failed with status ${tokenResponse.status}`);
 
     const tokenPayload = await tokenResponse.json();
@@ -223,20 +214,15 @@
 
     const conversationResponse = await fetch(`${DIRECT_LINE_BASE}/conversations`, {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${directLine.token}`,
-        "Content-Type": "application/json"
-      },
+      headers: { Authorization: `Bearer ${directLine.token}`, "Content-Type": "application/json" },
       body: "{}"
     });
-
     if (!conversationResponse.ok) throw new Error(`Direct Line conversation start failed with status ${conversationResponse.status}`);
 
     const conversationPayload = await conversationResponse.json();
     directLine.conversationId = conversationPayload.conversationId || tokenPayload.conversationId || "";
     directLine.expiresAt = Date.now() + (Number(conversationPayload.expires_in || tokenPayload.expires_in || 1800) * 1000);
     directLine.watermark = null;
-
     if (!directLine.conversationId) throw new Error("Direct Line did not return a conversation ID");
 
     await drainCurrentActivities();
@@ -250,7 +236,6 @@
       method: "POST",
       headers: { Authorization: `Bearer ${directLine.token}` }
     });
-
     if (!response.ok) throw new Error(`Direct Line token refresh failed with status ${response.status}`);
 
     const payload = await response.json();
@@ -263,56 +248,121 @@
       const set = await getActivities();
       if (set && set.watermark !== undefined && set.watermark !== null) directLine.watermark = set.watermark;
     } catch (error) {
-      console.warn("Could not establish initial Direct Line watermark", error);
+      console.warn("Could not establish Direct Line watermark", error);
     }
   }
 
-  async function waitForAgentResponse(userActivityId = "") {
+  async function waitForAgentResponse(userActivityId = "", turnStartedAt = Date.now()) {
     const deadline = Date.now() + RESPONSE_TIMEOUT_MS;
-    const collected = new Map();
-    let lastMeaningfulAt = 0;
+    const finalCandidates = new Map();
+    let lastCandidateAt = 0;
+    let sawProvisional = false;
 
     while (Date.now() < deadline) {
       await ensureFreshToken();
       const set = await getActivities();
       const activities = Array.isArray(set.activities) ? set.activities : [];
-
       if (set.watermark !== undefined && set.watermark !== null) directLine.watermark = set.watermark;
 
-      let botMessages = activities.filter((activity) => {
-        if (!activity || activity.type !== "message") return false;
-        if (activity.from && activity.from.id === directLine.userId) return false;
-        return Boolean((activity.text || "").trim() || (activity.speak || "").trim());
-      });
+      for (const activity of activities) {
+        if (!activity || (activity.from && activity.from.id === directLine.userId)) continue;
+        if (isStaleActivity(activity, turnStartedAt)) continue;
 
-      if (userActivityId) {
-        const directReplies = botMessages.filter((activity) => activity.replyToId === userActivityId);
-        if (directReplies.length) botMessages = directReplies;
-      }
+        const streamType = getStreamType(activity);
+        const text = String(activity.text || activity.speak || "").trim();
 
-      let addedMessage = false;
-      botMessages.forEach((activity) => {
-        const key = activity.id || `${activity.timestamp || ""}|${activity.text || activity.speak || ""}`;
-        if (!collected.has(key)) {
-          collected.set(key, activity);
-          addedMessage = true;
+        if (activity.type === "typing" || streamType === "informative" || streamType === "streaming") {
+          sawProvisional = true;
+          updateThinkingFromActivity(text);
+          continue;
         }
-      });
 
-      if (addedMessage) {
-        lastMeaningfulAt = Date.now();
-        updateThinkingIndicator("Finalising grounded response");
+        if (activity.type !== "message" || !text) continue;
+
+        if (userActivityId && activity.replyToId && activity.replyToId !== userActivityId) {
+          continue;
+        }
+
+        if (isProvisionalMessage(text)) {
+          sawProvisional = true;
+          updateThinkingFromActivity(text);
+          continue;
+        }
+
+        const key = activity.id || `${activity.timestamp || ""}|${text}`;
+        if (!finalCandidates.has(key)) {
+          finalCandidates.set(key, activity);
+          lastCandidateAt = Date.now();
+          updateThinkingIndicator("Finalising grounded response");
+        }
+
+        if (streamType === "final") {
+          return buildAgentPayload(Array.from(finalCandidates.values()));
+        }
       }
 
-      if (collected.size && lastMeaningfulAt && Date.now() - lastMeaningfulAt >= RESPONSE_SETTLE_MS) {
-        return buildAgentPayload(Array.from(collected.values()));
+      if (finalCandidates.size && lastCandidateAt) {
+        const candidateActivities = Array.from(finalCandidates.values());
+        const substantial = candidateActivities.some(isSubstantialAnswer);
+        const settleMs = substantial ? FINAL_SETTLE_MS : SHORT_FINAL_SETTLE_MS;
+        if (Date.now() - lastCandidateAt >= settleMs) {
+          return buildAgentPayload(candidateActivities);
+        }
+      } else if (sawProvisional) {
+        updateThinkingIndicator("Formulating grounded response");
       }
 
       await delay(POLL_INTERVAL_MS);
     }
 
-    if (collected.size) return buildAgentPayload(Array.from(collected.values()));
-    throw new Error("Timed out waiting for Copilot Studio response");
+    if (finalCandidates.size) return buildAgentPayload(Array.from(finalCandidates.values()));
+    throw new Error("Timed out waiting for Copilot Studio final response");
+  }
+
+  function getStreamType(activity) {
+    const entities = Array.isArray(activity.entities) ? activity.entities : [];
+    for (const entity of entities) {
+      if (!entity || typeof entity !== "object") continue;
+      const type = String(entity.type || "").toLowerCase();
+      if (type === "streaminfo" || type === "stream-info") {
+        const streamType = String(entity.streamType || entity.streamtype || "").toLowerCase();
+        if (streamType) return streamType;
+      }
+    }
+    const channelType = activity.channelData && (activity.channelData.streamType || activity.channelData.streamtype);
+    return channelType ? String(channelType).toLowerCase() : "";
+  }
+
+  function isStaleActivity(activity, turnStartedAt) {
+    const value = activity.timestamp || activity.localTimestamp || "";
+    if (!value) return false;
+    const time = new Date(value).getTime();
+    return Number.isFinite(time) && time < turnStartedAt - 1500;
+  }
+
+  function isProvisionalMessage(text) {
+    const compact = String(text).replace(/\s+/g, " ").trim();
+    if (!compact || compact.length > 260) return false;
+    return /^(?:i(?:'ll| will| am going to|’ll)\s+(?:search|check|look|retrieve|review|find)|let me\s+(?:search|check|look|retrieve|review|find)|(?:searching|checking|looking|retrieving|reviewing)\b|i(?:'m| am)\s+(?:searching|checking|looking|retrieving|reviewing)|i can\s+(?:search|check|look)|one moment|just a moment|working on it)/i.test(compact);
+  }
+
+  function isSubstantialAnswer(activity) {
+    const text = cleanAnswerText(activity.text || activity.speak || "");
+    if (text.length >= 90) return true;
+    if (/\n|\[[0-9]+\]|[-•]\s/.test(text)) return true;
+    if ((activity.attachments || []).length || (activity.entities || []).length) return true;
+    return extractSourcesFromActivity(activity).length > 0;
+  }
+
+  function updateThinkingFromActivity(text) {
+    const value = String(text || "").toLowerCase();
+    if (/search|retriev|knowledge|document|evidence|source/.test(value)) {
+      updateThinkingIndicator("Retrieving grounded evidence");
+    } else if (/summari|formulat|draft|compose|answer/.test(value)) {
+      updateThinkingIndicator("Formulating grounded response");
+    } else {
+      updateThinkingIndicator("Working through the grounded response");
+    }
   }
 
   function buildAgentPayload(botMessages) {
@@ -320,14 +370,8 @@
       .map((activity) => cleanAnswerText(activity.text || activity.speak || ""))
       .filter(Boolean)
       .join("\n\n");
-
     const sources = dedupeSources(botMessages.flatMap(extractSourcesFromActivity));
-
-    return {
-      provenance: "Grounded response",
-      answer,
-      sources
-    };
+    return { provenance: "Grounded response", answer, sources };
   }
 
   async function getActivities() {
@@ -336,7 +380,6 @@
       headers: { Authorization: `Bearer ${directLine.token}` },
       cache: "no-store"
     });
-
     if (!response.ok) throw new Error(`Direct Line receive failed with status ${response.status}`);
     return response.json();
   }
@@ -355,22 +398,14 @@
     const plainUrl = /https?:\/\/[^\s<>)\]]+/g;
     let match;
 
-    while ((match = markdownLink.exec(text)) !== null) {
-      sources.push({ label: match[1].trim() || "Evidence", url: match[2] });
-    }
-
-    while ((match = plainUrl.exec(text)) !== null) {
-      sources.push({ label: "Evidence", url: match[0] });
-    }
+    while ((match = markdownLink.exec(text)) !== null) sources.push({ label: match[1].trim() || "Evidence", url: match[2] });
+    while ((match = plainUrl.exec(text)) !== null) sources.push({ label: "Evidence", url: match[0] });
 
     (activity.attachments || []).forEach((attachment) => {
       if (attachment && attachment.contentUrl && isAllowedUrl(attachment.contentUrl)) {
         sources.push({ label: attachment.name || "Evidence", url: attachment.contentUrl });
       }
-
-      if (attachment && attachment.content && typeof attachment.content === "object") {
-        collectUrlsFromObject(attachment.content, sources);
-      }
+      if (attachment && attachment.content && typeof attachment.content === "object") collectUrlsFromObject(attachment.content, sources);
     });
 
     (activity.entities || []).forEach((entity) => collectUrlsFromObject(entity, sources));
@@ -381,15 +416,10 @@
 
   function collectUrlsFromObject(value, sources, depth = 0) {
     if (!value || typeof value !== "object" || depth > 5) return;
-
     const candidateUrl = value.url || value.contentUrl || value.uri || value.href;
     if (typeof candidateUrl === "string" && isAllowedUrl(candidateUrl)) {
-      sources.push({
-        label: value.title || value.name || value.text || value.citation || "Evidence",
-        url: candidateUrl
-      });
+      sources.push({ label: value.title || value.name || value.text || value.citation || "Evidence", url: candidateUrl });
     }
-
     Object.values(value).forEach((child) => {
       if (child && typeof child === "object") collectUrlsFromObject(child, sources, depth + 1);
     });
@@ -405,31 +435,18 @@
         seen.add(key);
         return true;
       })
-      .map((source) => ({
-        url: source.url.trim(),
-        label: normaliseSourceLabel(source.label, source.url)
-      }))
+      .map((source) => ({ url: source.url.trim(), label: normaliseSourceLabel(source.label, source.url) }))
       .slice(0, 6);
   }
 
   function normaliseSourceLabel(label, url) {
-    const cleaned = String(label || "")
-      .replace(/\s+/g, " ")
-      .replace(/^[-–—\s]+|[-–—\s]+$/g, "")
-      .trim();
-
-    if (cleaned && cleaned.toLowerCase() !== "evidence" && cleaned.length <= 72 && !/^https?:\/\//i.test(cleaned)) {
-      return cleaned;
-    }
-
+    const cleaned = String(label || "").replace(/\s+/g, " ").replace(/^[-–—\s]+|[-–—\s]+$/g, "").trim();
+    if (cleaned && cleaned.toLowerCase() !== "evidence" && cleaned.length <= 72 && !/^https?:\/\//i.test(cleaned)) return cleaned;
     try {
       const parsed = new URL(url);
       const pathPart = parsed.pathname.split("/").filter(Boolean).pop();
       if (pathPart) {
-        return decodeURIComponent(pathPart)
-          .replace(/[-_]+/g, " ")
-          .replace(/\.(html?|md|pdf)$/i, "")
-          .trim() || parsed.hostname;
+        return decodeURIComponent(pathPart).replace(/[-_]+/g, " ").replace(/\.(html?|md|pdf)$/i, "").trim() || parsed.hostname;
       }
       return parsed.hostname.replace(/^www\./, "");
     } catch {
@@ -448,17 +465,14 @@
   function addMessage(role, label, text, sources = []) {
     const node = document.createElement("article");
     node.className = `message ${role}`;
-
     const safeSources = sources
       .filter((source) => source && source.label && isAllowedUrl(source.url))
       .map((source) => `<a href="${escapeAttribute(source.url)}" target="_blank" rel="noreferrer">${escapeHtml(source.label)} ↗</a>`)
       .join("");
-
     const safeText = escapeHtml(text).replaceAll("\n", "<br />");
     const sourceMarkup = safeSources
       ? `<div class="source-block"><span class="message-label">Sources</span><div class="source-list">${safeSources}</div></div>`
       : "";
-
     node.innerHTML = `<span class="message-label">${escapeHtml(label)}</span><p>${safeText}</p>${sourceMarkup}`;
     conversation.appendChild(node);
     conversation.scrollTop = conversation.scrollHeight;
@@ -466,13 +480,11 @@
 
   function showThinkingIndicator(message) {
     removeThinkingIndicator();
-
     const node = document.createElement("article");
     node.className = "message assistant thinking-message";
     node.setAttribute("role", "status");
     node.setAttribute("aria-live", "polite");
     node.innerHTML = `<span class="message-label">SudoChat</span><p><span data-thinking-text>${escapeHtml(message)}</span><span data-thinking-dots aria-hidden="true">.</span></p>`;
-
     thinkingNode = node;
     conversation.appendChild(node);
     conversation.scrollTop = conversation.scrollHeight;
@@ -488,22 +500,15 @@
   }
 
   function updateThinkingIndicator(message) {
-    if (!thinkingNode) {
-      showThinkingIndicator(message);
-      return;
-    }
-
+    if (!thinkingNode) return showThinkingIndicator(message);
     const text = thinkingNode.querySelector("[data-thinking-text]");
     if (text) text.textContent = message;
     conversation.scrollTop = conversation.scrollHeight;
   }
 
   function removeThinkingIndicator() {
-    if (thinkingTimer) {
-      window.clearInterval(thinkingTimer);
-      thinkingTimer = null;
-    }
-
+    if (thinkingTimer) window.clearInterval(thinkingTimer);
+    thinkingTimer = null;
     if (thinkingNode && thinkingNode.parentNode) thinkingNode.parentNode.removeChild(thinkingNode);
     thinkingNode = null;
   }
@@ -523,21 +528,15 @@
     try {
       const url = new URL(value, window.location.href);
       return url.protocol === "https:" || url.protocol === "http:";
-    } catch {
-      return false;
-    }
+    } catch { return false; }
   }
 
   function createUserId() {
-    if (window.crypto && typeof window.crypto.randomUUID === "function") {
-      return `sudochat-${window.crypto.randomUUID()}`;
-    }
+    if (window.crypto && typeof window.crypto.randomUUID === "function") return `sudochat-${window.crypto.randomUUID()}`;
     return `sudochat-${Date.now()}-${Math.random().toString(36).slice(2)}`;
   }
 
-  function delay(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
+  function delay(ms) { return new Promise((resolve) => setTimeout(resolve, ms)); }
 
   function escapeHtml(value) {
     return String(value)
@@ -548,9 +547,7 @@
       .replaceAll("'", "&#039;");
   }
 
-  function escapeAttribute(value) {
-    return escapeHtml(value);
-  }
+  function escapeAttribute(value) { return escapeHtml(value); }
 
   function formatDate(value) {
     const date = new Date(value);
@@ -572,22 +569,17 @@
     const start = document.getElementById("project-start");
     const latest = document.getElementById("project-latest");
     const base = `https://api.github.com/repos/${baseConfig.githubRepo}/commits?path=${encodeURIComponent(baseConfig.githubPath)}&per_page=1`;
-
     try {
       const latestResponse = await fetch(base, { headers: { Accept: "application/vnd.github+json" } });
       if (!latestResponse.ok) throw new Error("GitHub timeline unavailable");
-
       const latestItems = await latestResponse.json();
       if (!latestItems.length) throw new Error("No commits found");
-
       latest.textContent = formatDate(latestItems[0].commit.committer.date);
       const lastPage = extractLastPage(latestResponse.headers.get("Link"));
-
       if (!lastPage) {
         start.textContent = latest.textContent;
         return;
       }
-
       const firstResponse = await fetch(`${base}&page=${lastPage}`, { headers: { Accept: "application/vnd.github+json" } });
       const firstItems = firstResponse.ok ? await firstResponse.json() : [];
       start.textContent = firstItems.length
@@ -595,8 +587,8 @@
         : "View GitHub history";
     } catch (error) {
       console.warn(error);
-      start.textContent = "View GitHub history";
-      latest.textContent = "unavailable";
+      if (start) start.textContent = "View GitHub history";
+      if (latest) latest.textContent = "unavailable";
     }
   }
 
