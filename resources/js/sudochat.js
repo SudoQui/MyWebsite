@@ -170,8 +170,6 @@
     await ensureDirectLineSession(tokenEndpoint);
     await ensureFreshToken();
 
-    // Advance past any late activity left over from a completed prior turn. This
-    // prevents a delayed response from being attached to the next user message.
     await drainCurrentActivities();
 
     updateThinkingIndicator("Retrieving grounded evidence");
@@ -255,6 +253,7 @@
   async function waitForAgentResponse(userActivityId = "", turnStartedAt = Date.now()) {
     const deadline = Date.now() + RESPONSE_TIMEOUT_MS;
     const finalCandidates = new Map();
+    const sourceActivities = new Map();
     let lastCandidateAt = 0;
     let sawProvisional = false;
 
@@ -268,6 +267,11 @@
         if (!activity || (activity.from && activity.from.id === directLine.userId)) continue;
         if (isStaleActivity(activity, turnStartedAt)) continue;
 
+        const sourceKey = activity.id || `${activity.timestamp || ""}|source|${sourceActivities.size}`;
+        if (extractSourcesFromActivity(activity).length && !sourceActivities.has(sourceKey)) {
+          sourceActivities.set(sourceKey, activity);
+        }
+
         const streamType = getStreamType(activity);
         const text = String(activity.text || activity.speak || "").trim();
 
@@ -279,9 +283,7 @@
 
         if (activity.type !== "message" || !text) continue;
 
-        if (userActivityId && activity.replyToId && activity.replyToId !== userActivityId) {
-          continue;
-        }
+        if (userActivityId && activity.replyToId && activity.replyToId !== userActivityId) continue;
 
         if (isProvisionalMessage(text)) {
           sawProvisional = true;
@@ -297,7 +299,7 @@
         }
 
         if (streamType === "final") {
-          return buildAgentPayload(Array.from(finalCandidates.values()));
+          return buildAgentPayload(Array.from(finalCandidates.values()), Array.from(sourceActivities.values()));
         }
       }
 
@@ -306,7 +308,7 @@
         const substantial = candidateActivities.some(isSubstantialAnswer);
         const settleMs = substantial ? FINAL_SETTLE_MS : SHORT_FINAL_SETTLE_MS;
         if (Date.now() - lastCandidateAt >= settleMs) {
-          return buildAgentPayload(candidateActivities);
+          return buildAgentPayload(candidateActivities, Array.from(sourceActivities.values()));
         }
       } else if (sawProvisional) {
         updateThinkingIndicator("Formulating grounded response");
@@ -315,7 +317,9 @@
       await delay(POLL_INTERVAL_MS);
     }
 
-    if (finalCandidates.size) return buildAgentPayload(Array.from(finalCandidates.values()));
+    if (finalCandidates.size) {
+      return buildAgentPayload(Array.from(finalCandidates.values()), Array.from(sourceActivities.values()));
+    }
     throw new Error("Timed out waiting for Copilot Studio final response");
   }
 
@@ -365,12 +369,14 @@
     }
   }
 
-  function buildAgentPayload(botMessages) {
+  function buildAgentPayload(botMessages, sourceActivities = botMessages) {
     const answer = botMessages
       .map((activity) => cleanAnswerText(activity.text || activity.speak || ""))
       .filter(Boolean)
       .join("\n\n");
-    const sources = dedupeSources(botMessages.flatMap(extractSourcesFromActivity));
+
+    const sourcePool = [...sourceActivities, ...botMessages];
+    const sources = dedupeSources(sourcePool.flatMap(extractSourcesFromActivity));
     return { provenance: "Grounded response", answer, sources };
   }
 
@@ -398,30 +404,58 @@
     const plainUrl = /https?:\/\/[^\s<>)\]]+/g;
     let match;
 
-    while ((match = markdownLink.exec(text)) !== null) sources.push({ label: match[1].trim() || "Evidence", url: match[2] });
-    while ((match = plainUrl.exec(text)) !== null) sources.push({ label: "Evidence", url: match[0] });
+    while ((match = markdownLink.exec(text)) !== null) {
+      sources.push({ label: match[1].trim() || "Source", url: match[2] });
+    }
+    while ((match = plainUrl.exec(text)) !== null) {
+      if (!isMetadataUrl(match[0])) sources.push({ label: "Source", url: match[0] });
+    }
 
     (activity.attachments || []).forEach((attachment) => {
-      if (attachment && attachment.contentUrl && isAllowedUrl(attachment.contentUrl)) {
-        sources.push({ label: attachment.name || "Evidence", url: attachment.contentUrl });
+      if (attachment && attachment.contentUrl && isAllowedUrl(attachment.contentUrl) && !isMetadataUrl(attachment.contentUrl)) {
+        sources.push({ label: attachment.name || "Source", url: attachment.contentUrl });
       }
-      if (attachment && attachment.content && typeof attachment.content === "object") collectUrlsFromObject(attachment.content, sources);
+      if (attachment && attachment.content && typeof attachment.content === "object") {
+        collectUrlsFromObject(attachment.content, sources);
+      }
     });
 
-    (activity.entities || []).forEach((entity) => collectUrlsFromObject(entity, sources));
+    collectUrlsFromObject(activity.citationEntities, sources);
+    collectUrlsFromObject(activity.entities, sources);
     collectUrlsFromObject(activity.channelData, sources);
     collectUrlsFromObject(activity.value, sources);
     return sources;
   }
 
-  function collectUrlsFromObject(value, sources, depth = 0) {
-    if (!value || typeof value !== "object" || depth > 5) return;
-    const candidateUrl = value.url || value.contentUrl || value.uri || value.href;
-    if (typeof candidateUrl === "string" && isAllowedUrl(candidateUrl)) {
-      sources.push({ label: value.title || value.name || value.text || value.citation || "Evidence", url: candidateUrl });
+  function collectUrlsFromObject(value, sources, depth = 0, inheritedLabel = "") {
+    if (value === null || value === undefined || depth > 7) return;
+
+    if (typeof value === "string") {
+      const urls = value.match(/https?:\/\/[^\s<>)\]"']+/g) || [];
+      urls.forEach((url) => {
+        if (isAllowedUrl(url) && !isMetadataUrl(url)) sources.push({ label: inheritedLabel || "Source", url });
+      });
+      return;
     }
-    Object.values(value).forEach((child) => {
-      if (child && typeof child === "object") collectUrlsFromObject(child, sources, depth + 1);
+
+    if (typeof value !== "object") return;
+
+    if (Array.isArray(value)) {
+      value.forEach((item) => collectUrlsFromObject(item, sources, depth + 1, inheritedLabel));
+      return;
+    }
+
+    const label = value.title || value.Title || value.name || value.Name || value.fileName || value.filename || value.citation || inheritedLabel || "Source";
+    const candidateUrl = value.url || value.URL || value.contentUrl || value.contentURL || value.uri || value.href || value.contentLocation || value.ContentLocation || value.sourceUrl || value.sourceURL;
+
+    if (typeof candidateUrl === "string" && isAllowedUrl(candidateUrl) && !isMetadataUrl(candidateUrl)) {
+      sources.push({ label, url: candidateUrl });
+    }
+
+    Object.entries(value).forEach(([key, child]) => {
+      if (child === candidateUrl) return;
+      const nextLabel = /title|name|file/i.test(key) && typeof child === "string" ? child : label;
+      collectUrlsFromObject(child, sources, depth + 1, nextLabel);
     });
   }
 
@@ -429,50 +463,98 @@
     const seen = new Set();
     return sources
       .filter((source) => {
-        if (!source || !source.url || !isAllowedUrl(source.url)) return false;
-        const key = source.url.trim();
+        if (!source || !source.url || !isAllowedUrl(source.url) || isMetadataUrl(source.url)) return false;
+        const key = normaliseSourceUrl(source.url);
         if (seen.has(key)) return false;
         seen.add(key);
         return true;
       })
-      .map((source) => ({ url: source.url.trim(), label: normaliseSourceLabel(source.label, source.url) }))
-      .slice(0, 6);
+      .map((source) => ({
+        url: source.url.trim(),
+        label: normaliseSourceLabel(source.label, source.url)
+      }))
+      .slice(0, 12);
+  }
+
+  function isMetadataUrl(value) {
+    try {
+      const host = new URL(value).hostname.replace(/^www\./, "").toLowerCase();
+      return host === "schema.org" || host === "adaptivecards.io" || host.endsWith("botframework.com");
+    } catch {
+      return false;
+    }
+  }
+
+  function normaliseSourceUrl(value) {
+    try {
+      const parsed = new URL(value);
+      parsed.hash = "";
+      return parsed.toString().replace(/\/$/, "");
+    } catch {
+      return String(value).trim();
+    }
   }
 
   function normaliseSourceLabel(label, url) {
-    const cleaned = String(label || "").replace(/\s+/g, " ").replace(/^[-–—\s]+|[-–—\s]+$/g, "").trim();
-    if (cleaned && cleaned.toLowerCase() !== "evidence" && cleaned.length <= 72 && !/^https?:\/\//i.test(cleaned)) return cleaned;
+    const cleaned = String(label || "")
+      .replace(/\s+/g, " ")
+      .replace(/^[-–—\s]+|[-–—\s]+$/g, "")
+      .trim();
+
+    if (cleaned && !/^(?:evidence|source|citation)$/i.test(cleaned) && cleaned.length <= 96 && !/^https?:\/\//i.test(cleaned)) {
+      return cleaned;
+    }
+
     try {
       const parsed = new URL(url);
-      const pathPart = parsed.pathname.split("/").filter(Boolean).pop();
-      if (pathPart) {
-        return decodeURIComponent(pathPart).replace(/[-_]+/g, " ").replace(/\.(html?|md|pdf)$/i, "").trim() || parsed.hostname;
-      }
-      return parsed.hostname.replace(/^www\./, "");
+      const host = parsed.hostname.replace(/^www\./, "");
+      const path = decodeURIComponent(parsed.pathname || "/").replace(/\/$/, "");
+      if (path && path !== "/") return `${host}${path}`;
+      return host;
     } catch {
-      return "Evidence";
+      return "Source";
     }
   }
 
   function cleanAnswerText(value) {
     return String(value)
       .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, "$1")
+      .replace(/^\s*(?:Evidence|Sources?)\s*:\s*.*$/gim, "")
       .replace(/\*\*([^*]+)\*\*/g, "$1")
       .replace(/`([^`]+)`/g, "$1")
+      .replace(/\n{3,}/g, "\n\n")
       .trim();
+  }
+
+  function renderAnswerWithCitations(text, sources) {
+    let safeText = escapeHtml(text);
+    safeText = safeText.replace(/\[(\d+)\]/g, (marker, value) => {
+      const index = Number(value) - 1;
+      const source = sources[index];
+      if (!source || !isAllowedUrl(source.url)) return marker;
+      const label = escapeAttribute(`Open source ${value}: ${source.label}`);
+      return `<a href="${escapeAttribute(source.url)}" target="_blank" rel="noreferrer" aria-label="${label}" title="${label}">[${value}]</a>`;
+    });
+    return safeText.replaceAll("\n", "<br />");
   }
 
   function addMessage(role, label, text, sources = []) {
     const node = document.createElement("article");
     node.className = `message ${role}`;
-    const safeSources = sources
-      .filter((source) => source && source.label && isAllowedUrl(source.url))
-      .map((source) => `<a href="${escapeAttribute(source.url)}" target="_blank" rel="noreferrer">${escapeHtml(source.label)} ↗</a>`)
+
+    const safeSourceObjects = sources.filter((source) => source && source.label && isAllowedUrl(source.url) && !isMetadataUrl(source.url));
+    const safeSources = safeSourceObjects
+      .map((source, index) => `<a href="${escapeAttribute(source.url)}" target="_blank" rel="noreferrer">[${index + 1}] ${escapeHtml(source.label)} ↗</a>`)
       .join("");
-    const safeText = escapeHtml(text).replaceAll("\n", "<br />");
+
+    const safeText = role === "assistant"
+      ? renderAnswerWithCitations(text, safeSourceObjects)
+      : escapeHtml(text).replaceAll("\n", "<br />");
+
     const sourceMarkup = safeSources
       ? `<div class="source-block"><span class="message-label">Sources</span><div class="source-list">${safeSources}</div></div>`
       : "";
+
     node.innerHTML = `<span class="message-label">${escapeHtml(label)}</span><p>${safeText}</p>${sourceMarkup}`;
     conversation.appendChild(node);
     conversation.scrollTop = conversation.scrollHeight;
