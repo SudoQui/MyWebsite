@@ -16,6 +16,70 @@
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="resources/css/sudochat.css" />
     <link rel="stylesheet" href="resources/css/sudochat-engine.css" />
+    <style>
+      #chat-view .top-action[data-mode="engine"] {
+        position: relative;
+        overflow: visible;
+      }
+
+      #chat-view .top-action[data-mode="engine"]::before {
+        content: "See how this was built";
+        position: absolute;
+        z-index: 8;
+        top: 48px;
+        left: 118px;
+        width: 158px;
+        color: #3d3430;
+        font-family: "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive;
+        font-size: clamp(.72rem, .9vw, .88rem);
+        font-weight: 600;
+        line-height: 1.08;
+        letter-spacing: 0;
+        text-transform: none;
+        text-align: left;
+        white-space: normal;
+        transform: rotate(-3deg);
+        pointer-events: none;
+        opacity: .9;
+        transition: opacity .2s ease;
+      }
+
+      #chat-view .top-action[data-mode="engine"]::after {
+        content: "";
+        position: absolute;
+        z-index: 8;
+        top: 27px;
+        left: 54px;
+        width: 108px;
+        height: 62px;
+        pointer-events: none;
+        opacity: .9;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 108 62'%3E%3Cpath d='M100 56 C76 51 50 38 18 12' fill='none' stroke='%233d3430' stroke-width='4.2' stroke-linecap='round'/%3E%3Cpath d='M18 12 L23 27 M18 12 L34 10' fill='none' stroke='%233d3430' stroke-width='4.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        transition: opacity .2s ease;
+      }
+
+      .sudochat-shell.has-chat #chat-view .top-action[data-mode="engine"]::before,
+      .sudochat-shell.has-chat #chat-view .top-action[data-mode="engine"]::after {
+        opacity: 0;
+      }
+
+      @media (max-width: 900px), (max-height: 700px) {
+        #chat-view .top-action[data-mode="engine"]::before,
+        #chat-view .top-action[data-mode="engine"]::after {
+          display: none;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        #chat-view .top-action[data-mode="engine"]::before,
+        #chat-view .top-action[data-mode="engine"]::after {
+          transition: none;
+        }
+      }
+    </style>
   </head>
   <body>
     <a class="skip-link" href="#chat-input">Skip to chat</a>
