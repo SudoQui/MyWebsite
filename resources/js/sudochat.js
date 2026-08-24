@@ -10,6 +10,7 @@
   const CONFIG_PATH = "resources/js/sudochat-config.json";
   const RESPONSE_TIMEOUT_MS = 60000;
   const POLL_INTERVAL_MS = 750;
+  const RESPONSE_SETTLE_MS = 1200;
 
   const shell = document.getElementById("sudochat-shell");
   const chatView = document.getElementById("chat-view");
@@ -32,6 +33,8 @@
   };
 
   let runtimeConfigPromise = null;
+  let thinkingNode = null;
+  let thinkingTimer = null;
 
   const architectureDetails = {
     frontend: "Custom web UI on mustafa-siddiqui.com. The public portfolio still works if the AI service is unavailable.",
@@ -94,10 +97,12 @@
     input.value = "";
     resizeInput();
     setBusy(true);
+    showThinkingIndicator("Connecting to the grounded agent");
 
     try {
       const config = await getRuntimeConfig();
       if (!config.gatewayEndpoint && !config.tokenEndpoint) {
+        removeThinkingIndicator();
         addMessage("assistant", "SudoChat MVP", "The interface is ready for the live Copilot agent, but its public token endpoint has not been configured yet.");
         return;
       }
@@ -106,6 +111,7 @@
         ? await requestViaGateway(config.gatewayEndpoint, question)
         : await requestViaDirectLine(config.tokenEndpoint, question);
 
+      removeThinkingIndicator();
       addMessage(
         "assistant",
         payload.provenance || "Grounded response",
@@ -115,8 +121,10 @@
     } catch (error) {
       console.error("SudoChat request failed", error);
       resetDirectLineSession();
+      removeThinkingIndicator();
       addMessage("assistant", "Service unavailable", "The live agent could not be reached. The portfolio and Engine Room remain available while the AI service is unavailable.");
     } finally {
+      removeThinkingIndicator();
       setBusy(false);
       input.focus();
     }
@@ -149,6 +157,7 @@
   }
 
   async function requestViaGateway(endpoint, question) {
+    updateThinkingIndicator("Retrieving grounded evidence");
     const response = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -157,12 +166,15 @@
     });
 
     if (!response.ok) throw new Error(`Gateway request failed with status ${response.status}`);
+    updateThinkingIndicator("Formulating response");
     return response.json();
   }
 
   async function requestViaDirectLine(tokenEndpoint, question) {
+    updateThinkingIndicator("Connecting to the grounded agent");
     await ensureDirectLineSession(tokenEndpoint);
     await ensureFreshToken();
+    updateThinkingIndicator("Retrieving grounded evidence");
 
     const sendResponse = await fetch(`${DIRECT_LINE_BASE}/conversations/${encodeURIComponent(directLine.conversationId)}/activities`, {
       method: "POST",
@@ -180,7 +192,16 @@
     });
 
     if (!sendResponse.ok) throw new Error(`Direct Line send failed with status ${sendResponse.status}`);
-    return waitForAgentResponse();
+
+    let sendPayload = {};
+    try {
+      sendPayload = await sendResponse.json();
+    } catch {
+      sendPayload = {};
+    }
+
+    updateThinkingIndicator("Formulating grounded response");
+    return waitForAgentResponse(sendPayload.id || "");
   }
 
   async function ensureDirectLineSession(tokenEndpoint) {
@@ -246,8 +267,10 @@
     }
   }
 
-  async function waitForAgentResponse() {
+  async function waitForAgentResponse(userActivityId = "") {
     const deadline = Date.now() + RESPONSE_TIMEOUT_MS;
+    const collected = new Map();
+    let lastMeaningfulAt = 0;
 
     while (Date.now() < deadline) {
       await ensureFreshToken();
@@ -256,31 +279,55 @@
 
       if (set.watermark !== undefined && set.watermark !== null) directLine.watermark = set.watermark;
 
-      const botMessages = activities.filter((activity) => {
+      let botMessages = activities.filter((activity) => {
         if (!activity || activity.type !== "message") return false;
         if (activity.from && activity.from.id === directLine.userId) return false;
         return Boolean((activity.text || "").trim() || (activity.speak || "").trim());
       });
 
-      if (botMessages.length) {
-        const answer = botMessages
-          .map((activity) => cleanAnswerText(activity.text || activity.speak || ""))
-          .filter(Boolean)
-          .join("\n\n");
+      if (userActivityId) {
+        const directReplies = botMessages.filter((activity) => activity.replyToId === userActivityId);
+        if (directReplies.length) botMessages = directReplies;
+      }
 
-        const sources = dedupeSources(botMessages.flatMap(extractSourcesFromActivity));
+      let addedMessage = false;
+      botMessages.forEach((activity) => {
+        const key = activity.id || `${activity.timestamp || ""}|${activity.text || activity.speak || ""}`;
+        if (!collected.has(key)) {
+          collected.set(key, activity);
+          addedMessage = true;
+        }
+      });
 
-        return {
-          provenance: "Grounded response",
-          answer,
-          sources
-        };
+      if (addedMessage) {
+        lastMeaningfulAt = Date.now();
+        updateThinkingIndicator("Finalising grounded response");
+      }
+
+      if (collected.size && lastMeaningfulAt && Date.now() - lastMeaningfulAt >= RESPONSE_SETTLE_MS) {
+        return buildAgentPayload(Array.from(collected.values()));
       }
 
       await delay(POLL_INTERVAL_MS);
     }
 
+    if (collected.size) return buildAgentPayload(Array.from(collected.values()));
     throw new Error("Timed out waiting for Copilot Studio response");
+  }
+
+  function buildAgentPayload(botMessages) {
+    const answer = botMessages
+      .map((activity) => cleanAnswerText(activity.text || activity.speak || ""))
+      .filter(Boolean)
+      .join("\n\n");
+
+    const sources = dedupeSources(botMessages.flatMap(extractSourcesFromActivity));
+
+    return {
+      provenance: "Grounded response",
+      answer,
+      sources
+    };
   }
 
   async function getActivities() {
@@ -305,10 +352,15 @@
     const sources = [];
     const text = String(activity.text || activity.speak || "");
     const markdownLink = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
+    const plainUrl = /https?:\/\/[^\s<>)\]]+/g;
     let match;
 
     while ((match = markdownLink.exec(text)) !== null) {
       sources.push({ label: match[1].trim() || "Evidence", url: match[2] });
+    }
+
+    while ((match = plainUrl.exec(text)) !== null) {
+      sources.push({ label: "Evidence", url: match[0] });
     }
 
     (activity.attachments || []).forEach((attachment) => {
@@ -322,11 +374,13 @@
     });
 
     (activity.entities || []).forEach((entity) => collectUrlsFromObject(entity, sources));
+    collectUrlsFromObject(activity.channelData, sources);
+    collectUrlsFromObject(activity.value, sources);
     return sources;
   }
 
   function collectUrlsFromObject(value, sources, depth = 0) {
-    if (!value || typeof value !== "object" || depth > 4) return;
+    if (!value || typeof value !== "object" || depth > 5) return;
 
     const candidateUrl = value.url || value.contentUrl || value.uri || value.href;
     if (typeof candidateUrl === "string" && isAllowedUrl(candidateUrl)) {
@@ -343,13 +397,44 @@
 
   function dedupeSources(sources) {
     const seen = new Set();
-    return sources.filter((source) => {
-      if (!source || !source.url || !isAllowedUrl(source.url)) return false;
-      const key = source.url.trim();
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    }).slice(0, 4);
+    return sources
+      .filter((source) => {
+        if (!source || !source.url || !isAllowedUrl(source.url)) return false;
+        const key = source.url.trim();
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      })
+      .map((source) => ({
+        url: source.url.trim(),
+        label: normaliseSourceLabel(source.label, source.url)
+      }))
+      .slice(0, 6);
+  }
+
+  function normaliseSourceLabel(label, url) {
+    const cleaned = String(label || "")
+      .replace(/\s+/g, " ")
+      .replace(/^[-–—\s]+|[-–—\s]+$/g, "")
+      .trim();
+
+    if (cleaned && cleaned.toLowerCase() !== "evidence" && cleaned.length <= 72 && !/^https?:\/\//i.test(cleaned)) {
+      return cleaned;
+    }
+
+    try {
+      const parsed = new URL(url);
+      const pathPart = parsed.pathname.split("/").filter(Boolean).pop();
+      if (pathPart) {
+        return decodeURIComponent(pathPart)
+          .replace(/[-_]+/g, " ")
+          .replace(/\.(html?|md|pdf)$/i, "")
+          .trim() || parsed.hostname;
+      }
+      return parsed.hostname.replace(/^www\./, "");
+    } catch {
+      return "Evidence";
+    }
   }
 
   function cleanAnswerText(value) {
@@ -370,9 +455,57 @@
       .join("");
 
     const safeText = escapeHtml(text).replaceAll("\n", "<br />");
-    node.innerHTML = `<span class="message-label">${escapeHtml(label)}</span><p>${safeText}</p>${safeSources ? `<div class="source-list">${safeSources}</div>` : ""}`;
+    const sourceMarkup = safeSources
+      ? `<div class="source-block"><span class="message-label">Sources</span><div class="source-list">${safeSources}</div></div>`
+      : "";
+
+    node.innerHTML = `<span class="message-label">${escapeHtml(label)}</span><p>${safeText}</p>${sourceMarkup}`;
     conversation.appendChild(node);
     conversation.scrollTop = conversation.scrollHeight;
+  }
+
+  function showThinkingIndicator(message) {
+    removeThinkingIndicator();
+
+    const node = document.createElement("article");
+    node.className = "message assistant thinking-message";
+    node.setAttribute("role", "status");
+    node.setAttribute("aria-live", "polite");
+    node.innerHTML = `<span class="message-label">SudoChat</span><p><span data-thinking-text>${escapeHtml(message)}</span><span data-thinking-dots aria-hidden="true">.</span></p>`;
+
+    thinkingNode = node;
+    conversation.appendChild(node);
+    conversation.scrollTop = conversation.scrollHeight;
+
+    let frame = 1;
+    thinkingTimer = window.setInterval(() => {
+      if (!thinkingNode) return;
+      const dots = thinkingNode.querySelector("[data-thinking-dots]");
+      if (!dots) return;
+      frame = (frame % 3) + 1;
+      dots.textContent = ".".repeat(frame);
+    }, 360);
+  }
+
+  function updateThinkingIndicator(message) {
+    if (!thinkingNode) {
+      showThinkingIndicator(message);
+      return;
+    }
+
+    const text = thinkingNode.querySelector("[data-thinking-text]");
+    if (text) text.textContent = message;
+    conversation.scrollTop = conversation.scrollHeight;
+  }
+
+  function removeThinkingIndicator() {
+    if (thinkingTimer) {
+      window.clearInterval(thinkingTimer);
+      thinkingTimer = null;
+    }
+
+    if (thinkingNode && thinkingNode.parentNode) thinkingNode.parentNode.removeChild(thinkingNode);
+    thinkingNode = null;
   }
 
   function setBusy(busy) {
