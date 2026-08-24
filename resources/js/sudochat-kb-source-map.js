@@ -1,6 +1,9 @@
 (() => {
   const MANIFEST_PATH = "resources/data/sudochat-kb-manifest.json";
   const KB_BASE = "https://mustafa-siddiqui.com/sudochat-kb/";
+  const DIRECT_LINE_FRAGMENT = "directline.botframework.com/v3/directline/";
+
+  let turnMetadataCandidates = [];
 
   function normalise(value) {
     return String(value || "")
@@ -23,8 +26,8 @@
         title: String(source.title),
         displayTitle: String(source.displayTitle || source.title),
         aliases: Array.isArray(source.aliases) ? source.aliases.map(String) : [],
-        // The destination is always constructed by application code. Model-provided
-        // URLs are never trusted for SudoChat knowledge-base citations.
+        // Internal citation destinations are application-owned. The model never
+        // gets to choose or reconstruct a SudoChat KB URL.
         url: `${KB_BASE}${String(source.file)}`
       }));
   }
@@ -66,8 +69,8 @@
     });
     if (exact) return exact;
 
-    // Metadata often contains a title plus a generated URL or other wrapper text.
-    // Only use sufficiently descriptive complete aliases/titles for contains matching.
+    // Citation metadata often wraps a useful source title with unrelated IDs or
+    // a generated URL. Contains matching is only allowed for descriptive labels.
     return sources.find((source) => {
       const candidates = [source.title, source.displayTitle, ...source.aliases]
         .map(normalise)
@@ -146,18 +149,6 @@
     return output.join("\n").replace(/\n{3,}/g, "\n\n").trim();
   }
 
-  function addResolvedSource(target, source) {
-    if (!source || target.some((item) => item.sourceId === source.sourceId)) return;
-    target.push({
-      id: source.id,
-      sourceId: source.sourceId,
-      file: source.file,
-      label: source.displayTitle || source.title,
-      title: source.title,
-      url: source.url
-    });
-  }
-
   function metadataIdentity(value) {
     if (!value || typeof value !== "object" || Array.isArray(value)) return "";
 
@@ -176,54 +167,226 @@
       .join(" ");
   }
 
-  function collectMetadataSources(value, sources, target, depth = 0, parentKey = "") {
+  function addCandidate(value) {
+    const candidate = String(value || "").trim();
+    if (!candidate) return;
+    if (!turnMetadataCandidates.includes(candidate)) turnMetadataCandidates.push(candidate);
+  }
+
+  function collectMetadataCandidates(value, depth = 0, parentKey = "") {
     if (value === null || value === undefined || depth > 9) return;
 
     if (Array.isArray(value)) {
-      value.forEach((item) => collectMetadataSources(item, sources, target, depth + 1, parentKey));
+      value.forEach((item) => collectMetadataCandidates(item, depth + 1, parentKey));
       return;
     }
 
-    if (typeof value === "string") {
-      if (/source|citation|title|name|file|url|uri|href|location|id/i.test(parentKey)) {
-        addResolvedSource(target, findSource(value, sources));
-      }
+    if (typeof value === "string" || typeof value === "number") {
+      if (/source|citation|title|name|file|url|uri|href|location|id/i.test(parentKey)) addCandidate(value);
       return;
     }
 
     if (typeof value !== "object") return;
 
-    addResolvedSource(target, findSource(metadataIdentity(value), sources));
+    addCandidate(metadataIdentity(value));
 
     Object.entries(value).forEach(([key, child]) => {
-      // The natural-language answer is handled separately. Do not infer a source
-      // merely because ordinary answer text happens to resemble a KB title.
       if (key === "text" || key === "speak") return;
-      collectMetadataSources(child, sources, target, depth + 1, key);
+      collectMetadataCandidates(child, depth + 1, key);
     });
   }
 
-  async function resolveTurn(activities, answerText) {
-    const sources = await ready;
-    if (!sources.length) return [];
+  function captureActivities(payload) {
+    const activities = payload && Array.isArray(payload.activities) ? payload.activities : [];
+    activities.forEach((activity) => {
+      const text = String((activity && (activity.text || activity.speak)) || "");
+      extractEvidenceTitles(text).forEach(addCandidate);
+      collectMetadataCandidates(activity && activity.citationEntities, 0, "citationEntities");
+      collectMetadataCandidates(activity && activity.entities, 0, "entities");
+      collectMetadataCandidates(activity && activity.attachments, 0, "attachments");
+      collectMetadataCandidates(activity && activity.channelData, 0, "channelData");
+      collectMetadataCandidates(activity && activity.value, 0, "value");
+    });
+  }
 
+  function requestMethod(args) {
+    const initMethod = args[1] && args[1].method;
+    if (initMethod) return String(initMethod).toUpperCase();
+    const input = args[0];
+    return input && input.method ? String(input.method).toUpperCase() : "GET";
+  }
+
+  function requestBody(args) {
+    if (args[1] && typeof args[1].body === "string") return args[1].body;
+    return "";
+  }
+
+  // Passively inspect Direct Line metadata. Responses are returned unchanged;
+  // the model's URLs never become trusted application state.
+  const nativeFetch = window.fetch.bind(window);
+  window.fetch = async (...args) => {
+    const requestUrl = typeof args[0] === "string" ? args[0] : args[0] && args[0].url;
+    const isActivityRequest = Boolean(requestUrl && requestUrl.includes(DIRECT_LINE_FRAGMENT) && requestUrl.includes("/activities"));
+
+    if (isActivityRequest && requestMethod(args) === "POST") {
+      try {
+        const body = JSON.parse(requestBody(args) || "{}");
+        if (body && body.type === "message") turnMetadataCandidates = [];
+      } catch {
+        turnMetadataCandidates = [];
+      }
+    }
+
+    const response = await nativeFetch(...args);
+
+    if (isActivityRequest && requestMethod(args) === "GET") {
+      response.clone().json().then(captureActivities).catch(() => {});
+    }
+
+    return response;
+  };
+
+  function addResolvedSource(target, source) {
+    if (!source || target.some((item) => item.sourceId === source.sourceId)) return;
+    target.push({
+      id: source.id,
+      sourceId: source.sourceId,
+      file: source.file,
+      label: source.displayTitle || source.title,
+      title: source.title,
+      url: source.url
+    });
+  }
+
+  function resolveRenderedSources(rawText, node, sources, metadataSnapshot) {
     const resolved = [];
 
-    // If Copilot prints a named Evidence/Sources line, use the titles as ordered
-    // source identities, but never use the URLs printed by the language model.
-    extractEvidenceTitles(answerText).forEach((title) => {
+    // Named Evidence/Sources entries preserve the model's intended source order,
+    // but their generated URLs are discarded completely.
+    extractEvidenceTitles(rawText).forEach((title) => {
       addResolvedSource(resolved, findSource(title, sources));
     });
 
-    (Array.isArray(activities) ? activities : []).forEach((activity) => {
-      collectMetadataSources(activity && activity.citationEntities, sources, resolved, 0, "citationEntities");
-      collectMetadataSources(activity && activity.entities, sources, resolved, 0, "entities");
-      collectMetadataSources(activity && activity.attachments, sources, resolved, 0, "attachments");
-      collectMetadataSources(activity && activity.channelData, sources, resolved, 0, "channelData");
-      collectMetadataSources(activity && activity.value, sources, resolved, 0, "value");
+    // Existing rendered links can still contain useful labels even when their URL
+    // is malformed. Use the label as identity, never the destination.
+    node.querySelectorAll(".source-block a").forEach((anchor) => {
+      [anchor.textContent, anchor.title, anchor.getAttribute("aria-label")]
+        .filter(Boolean)
+        .forEach((value) => addResolvedSource(resolved, findSource(value, sources)));
     });
 
-    return resolved;
+    metadataSnapshot.forEach((candidate) => {
+      addResolvedSource(resolved, findSource(candidate, sources));
+    });
+
+    return resolved.slice(0, 12);
+  }
+
+  function appendTextWithCitations(paragraph, text, resolved) {
+    paragraph.replaceChildren();
+    const markerPattern = /\[(\d+)\]/g;
+    let cursor = 0;
+    let match;
+
+    const appendPlainText = (value) => {
+      const parts = String(value).split("\n");
+      parts.forEach((part, index) => {
+        if (index) paragraph.appendChild(document.createElement("br"));
+        if (part) paragraph.appendChild(document.createTextNode(part));
+      });
+    };
+
+    while ((match = markerPattern.exec(text)) !== null) {
+      appendPlainText(text.slice(cursor, match.index));
+      const source = resolved[Number(match[1]) - 1];
+
+      if (source) {
+        const anchor = document.createElement("a");
+        anchor.href = source.url;
+        anchor.target = "_blank";
+        anchor.rel = "noreferrer";
+        anchor.textContent = match[0];
+        anchor.title = `Open source ${match[1]}: ${source.label}`;
+        anchor.setAttribute("aria-label", anchor.title);
+        paragraph.appendChild(anchor);
+      } else {
+        paragraph.appendChild(document.createTextNode(match[0]));
+      }
+
+      cursor = markerPattern.lastIndex;
+    }
+
+    appendPlainText(text.slice(cursor));
+  }
+
+  function renderSourceBlock(node, resolved) {
+    const oldBlock = node.querySelector(".source-block");
+    if (oldBlock) oldBlock.remove();
+    if (!resolved.length) return;
+
+    const block = document.createElement("div");
+    block.className = "source-block";
+
+    const label = document.createElement("span");
+    label.className = "message-label";
+    label.textContent = "Sources";
+    block.appendChild(label);
+
+    const list = document.createElement("div");
+    list.className = "source-list";
+
+    resolved.forEach((source, index) => {
+      const anchor = document.createElement("a");
+      anchor.href = source.url;
+      anchor.target = "_blank";
+      anchor.rel = "noreferrer";
+      anchor.textContent = `[${index + 1}] ${source.label} ↗`;
+      anchor.title = source.url;
+      list.appendChild(anchor);
+    });
+
+    block.appendChild(list);
+    node.appendChild(block);
+  }
+
+  async function enhanceRenderedMessage(node) {
+    if (!node || !node.matches || !node.matches(".message.assistant")) return;
+    if (node.classList.contains("thinking-message")) return;
+
+    const paragraph = node.querySelector("p");
+    if (!paragraph) return;
+
+    const rawText = paragraph.innerText || paragraph.textContent || "";
+    const metadataSnapshot = [...turnMetadataCandidates];
+    const sources = await ready;
+    const resolved = resolveRenderedSources(rawText, node, sources, metadataSnapshot);
+    const cleanedText = stripEvidenceSections(rawText);
+
+    appendTextWithCitations(paragraph, cleanedText, resolved);
+    renderSourceBlock(node, resolved);
+  }
+
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      mutation.addedNodes.forEach((node) => {
+        if (node.nodeType !== Node.ELEMENT_NODE) return;
+        if (node.matches && node.matches(".message.assistant")) enhanceRenderedMessage(node);
+        node.querySelectorAll && node.querySelectorAll(".message.assistant").forEach(enhanceRenderedMessage);
+      });
+    });
+  });
+
+  const startObserver = () => {
+    const conversation = document.getElementById("conversation");
+    if (!conversation) return;
+    conversation.querySelectorAll(".message.assistant").forEach(enhanceRenderedMessage);
+    observer.observe(conversation, { childList: true, subtree: true });
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", startObserver, { once: true });
+  } else {
+    startObserver();
   }
 
   async function resolve(value) {
@@ -243,7 +406,6 @@
   window.SudoChatKbSources = {
     ready,
     resolve,
-    resolveTurn,
     extractEvidenceTitles,
     stripEvidenceSections,
     baseUrl: KB_BASE
