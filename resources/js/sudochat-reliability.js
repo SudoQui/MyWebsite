@@ -5,6 +5,7 @@
   const DEDUPE_WINDOW_MS = 1800;
 
   const nativeFetch = window.fetch.bind(window);
+  window.SudoChatNativeFetch = nativeFetch;
   const nativeConsoleError = console.error.bind(console);
   let telemetryEndpointPromise = null;
   const recentLogs = new Map();
@@ -261,4 +262,15 @@
   window.SudoChatReliability = {
     emitClientError
   };
+
+  // Load the background warm-up after the reliability layer has captured the
+  // original browser fetch. The helper uses a disposable conversation so its
+  // hidden turn cannot influence the visitor's actual chat context.
+  if (!document.querySelector('script[data-sudochat-prewarm]')) {
+    const script = document.createElement("script");
+    script.src = "resources/js/sudochat-prewarm.js";
+    script.async = true;
+    script.dataset.sudochatPrewarm = "true";
+    document.head.appendChild(script);
+  }
 })();
