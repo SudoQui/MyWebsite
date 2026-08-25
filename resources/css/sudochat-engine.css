@@ -1,4 +1,4 @@
-/* SudoChat Engine Room v2 — enterprise architecture-map presentation. */
+/* SudoChat Engine Room v3 — readable enterprise architecture-map presentation. */
 
 #engine-view {
   --arch-blue: #1768f2;
@@ -7,29 +7,43 @@
   --arch-step: #8c9095;
 }
 
+#engine-view .top-action,
+#engine-view .top-label {
+  font-size: clamp(.7rem, .85vw, .8rem);
+}
+
 #engine-view .engine-layout {
-  width: min(1460px, 96vw);
-  grid-template-rows: 72px minmax(0, 1fr) 86px;
-  gap: 9px;
+  width: min(1500px, 97vw);
+  grid-template-rows: 82px minmax(0, 1fr) 116px;
+  gap: 10px;
 }
 
 #engine-view .engine-heading {
-  grid-template-columns: 1fr minmax(280px, .8fr);
+  grid-template-columns: minmax(0, 1fr) minmax(360px, .85fr);
+  gap: 26px;
+}
+
+#engine-view .engine-kicker {
+  font-size: clamp(.68rem, .78vw, .76rem);
+  line-height: 1.25;
 }
 
 #engine-view .engine-heading h2 {
-  font-size: clamp(1.2rem, 2vw, 1.72rem);
+  font-size: clamp(1.38rem, 2vw, 1.9rem);
+  line-height: 1.08;
 }
 
 #engine-view .engine-heading p {
-  max-width: 520px;
+  max-width: 600px;
+  font-size: clamp(.8rem, .9vw, .9rem);
+  line-height: 1.42;
 }
 
 .engine-architecture-map {
   position: relative;
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(260px, .25fr);
+  grid-template-columns: minmax(0, 1fr) minmax(280px, .25fr);
   gap: 10px;
   font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
 }
@@ -48,14 +62,15 @@
 }
 
 .arch-zone-title {
-  height: 48px;
+  height: 54px;
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 0 20px;
   border-bottom: 1px solid rgba(23,104,242,.08);
   font-family: "Space Grotesk", sans-serif;
-  font-size: clamp(.82rem, 1.25vw, 1rem);
+  font-size: clamp(.86rem, 1vw, 1rem);
+  line-height: 1.2;
   font-weight: 600;
   letter-spacing: -.015em;
   background: rgba(255,255,255,.64);
@@ -75,7 +90,7 @@
   content: "";
   position: absolute;
   left: 23px;
-  top: 23px;
+  top: 26px;
   width: 8px;
   height: 2px;
   background: var(--arch-line);
@@ -83,14 +98,14 @@
 
 .arch-zone-body {
   min-height: 0;
-  height: calc(100% - 48px);
-  padding: clamp(16px, 2vw, 26px);
+  height: calc(100% - 54px);
+  padding: clamp(18px, 1.7vw, 26px);
 }
 
 .arch-client-body {
   display: grid;
   grid-template-rows: minmax(0, .9fr) minmax(0, 1.1fr);
-  gap: clamp(22px, 4vh, 42px);
+  gap: clamp(26px, 4vh, 44px);
 }
 
 .arch-lane {
@@ -101,12 +116,9 @@
   gap: 0;
 }
 
-.arch-lane-ingest {
-  grid-template-columns: 96px 34px minmax(110px, .8fr) 42px minmax(118px, .85fr) 42px minmax(120px, .9fr) 42px minmax(118px, .85fr);
-}
-
+.arch-lane-ingest,
 .arch-lane-query {
-  grid-template-columns: 96px 34px minmax(120px, .9fr) 42px minmax(122px, .9fr) 42px minmax(120px, .9fr) 42px minmax(118px, .85fr);
+  grid-template-columns: 102px 38px minmax(132px, .9fr) 44px minmax(138px, .95fr) 44px minmax(140px, 1fr) 44px minmax(136px, .95fr);
 }
 
 .arch-cloud-body {
@@ -137,15 +149,15 @@
 
 .arch-node {
   width: 100%;
-  min-height: 76px;
-  padding: 10px 10px 9px;
+  min-height: 94px;
+  padding: 12px 11px 11px;
   border: 1px solid rgba(23,104,242,.35);
   border-radius: 9px;
   background: #fff;
   display: grid;
   place-items: center;
   align-content: center;
-  gap: 4px;
+  gap: 5px;
   text-align: center;
   cursor: pointer;
   box-shadow: 0 4px 10px rgba(23,104,242,.05);
@@ -161,26 +173,26 @@
 
 .arch-node strong {
   font-family: "Space Grotesk", sans-serif;
-  font-size: clamp(.62rem, .9vw, .73rem);
-  line-height: 1.08;
-}
-
-.arch-node small {
-  color: #6d737c;
-  font-size: clamp(.48rem, .67vw, .58rem);
+  font-size: clamp(.78rem, .84vw, .88rem);
   line-height: 1.18;
 }
 
+.arch-node small {
+  color: #5f6670;
+  font-size: clamp(.7rem, .72vw, .76rem);
+  line-height: 1.34;
+}
+
 .arch-node-icon {
-  width: 34px;
-  height: 34px;
+  width: 38px;
+  height: 38px;
   display: grid;
   place-items: center;
   border-radius: 8px;
   background: linear-gradient(145deg, #2d7afa, #73a8ff);
   color: #fff;
   font-family: "Space Grotesk", sans-serif;
-  font-size: .72rem;
+  font-size: .78rem;
   font-weight: 700;
   box-shadow: 0 5px 12px rgba(23,104,242,.18);
 }
@@ -197,22 +209,22 @@
 .arch-actor {
   display: grid;
   justify-items: center;
-  gap: 5px;
+  gap: 7px;
   color: #20242a;
   text-align: center;
-  font-size: .61rem;
-  line-height: 1.1;
+  font-size: clamp(.68rem, .72vw, .75rem);
+  line-height: 1.2;
 }
 
 .arch-person {
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   display: grid;
   place-items: center;
   border-radius: 50%;
   background: var(--arch-blue);
   color: #fff;
-  font-size: 1.25rem;
+  font-size: 1.32rem;
   box-shadow: 0 5px 14px rgba(23,104,242,.16);
 }
 
@@ -239,14 +251,14 @@
 .arch-step {
   position: absolute;
   z-index: 6;
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   display: grid;
   place-items: center;
   background: var(--arch-step);
   color: #fff;
-  font-size: .58rem;
+  font-size: .7rem;
   font-weight: 700;
   box-shadow: 0 2px 5px rgba(0,0,0,.08);
 }
@@ -256,20 +268,21 @@
 
 .arch-lane-label {
   position: absolute;
-  left: 104px;
-  top: -12px;
+  left: 110px;
+  top: -15px;
   z-index: 5;
-  padding: 2px 6px;
+  padding: 3px 7px;
   background: #fff;
   color: #424850;
-  font-size: .55rem;
+  font-size: clamp(.66rem, .68vw, .72rem);
+  line-height: 1.2;
   font-weight: 600;
 }
 
 .arch-retrieval-group {
   position: absolute;
   z-index: 1;
-  left: 126px;
+  left: 134px;
   right: 4px;
   top: 6px;
   bottom: 6px;
@@ -282,15 +295,16 @@
 .arch-retrieval-group span {
   position: absolute;
   left: 50%;
-  bottom: -22px;
+  bottom: -25px;
   transform: translateX(-50%);
   color: var(--arch-blue);
-  font-size: .55rem;
+  font-size: clamp(.66rem, .68vw, .72rem);
+  line-height: 1.25;
   white-space: nowrap;
 }
 
 .arch-cloud-node {
-  width: min(180px, 86%);
+  width: min(210px, 90%);
 }
 
 .arch-cloud-arrow {
@@ -314,7 +328,8 @@
 
 .arch-cloud-caption {
   color: var(--arch-blue);
-  font-size: .55rem;
+  font-size: clamp(.66rem, .68vw, .72rem);
+  line-height: 1.25;
   text-align: center;
 }
 
@@ -346,27 +361,27 @@
 .arch-token-note {
   position: absolute;
   z-index: 7;
-  left: 27%;
-  bottom: 9px;
-  max-width: 250px;
-  padding: 5px 7px;
+  left: 25%;
+  bottom: 8px;
+  max-width: 340px;
+  padding: 7px 9px;
   border: 1px dashed rgba(23,104,242,.45);
   border-radius: 6px;
-  background: rgba(255,255,255,.92);
-  color: #5f6670;
-  font-size: .49rem;
-  line-height: 1.2;
+  background: rgba(255,255,255,.94);
+  color: #555d67;
+  font-size: clamp(.66rem, .68vw, .72rem);
+  line-height: 1.34;
 }
 
 .engine-controls-rail {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  gap: 10px;
 }
 
 .engine-control-card {
   min-width: 0;
-  padding: 8px 10px;
+  padding: 10px 12px;
   border: 1px solid var(--line);
   border-radius: 9px;
   background: rgba(255,255,255,.9);
@@ -375,67 +390,170 @@
 .engine-control-card span {
   display: block;
   color: var(--arch-blue);
-  font-size: .48rem;
+  font-size: clamp(.62rem, .66vw, .68rem);
+  line-height: 1.2;
   font-weight: 800;
-  letter-spacing: .12em;
+  letter-spacing: .1em;
 }
 
 .engine-control-card strong {
   display: block;
-  margin-top: 3px;
-  font-size: .63rem;
-  line-height: 1.12;
+  margin-top: 5px;
+  font-size: clamp(.76rem, .8vw, .84rem);
+  line-height: 1.24;
 }
 
 .engine-control-card small {
   display: block;
-  margin-top: 3px;
-  color: var(--muted);
-  font-size: .52rem;
-  line-height: 1.18;
+  margin-top: 5px;
+  color: #646b74;
+  font-size: clamp(.69rem, .72vw, .74rem);
+  line-height: 1.34;
 }
 
-@media (max-height: 760px) {
+/* Preserve readable type on short screens. The Engine Room scrolls internally
+   instead of shrinking architectural labels to illegible sizes. */
+@media (max-height: 820px) {
   #engine-view .engine-layout {
-    grid-template-rows: 55px minmax(0, 1fr) 70px;
-    gap: 6px;
+    grid-template-rows: auto minmax(500px, auto) auto;
+    overflow-y: auto;
+    padding-bottom: 12px;
+    scrollbar-width: thin;
   }
-  .arch-zone-title { height: 38px; padding-inline: 16px; }
-  .arch-zone-title::after { left: 19px; top: 18px; }
-  .arch-zone-body { height: calc(100% - 38px); padding: 12px 16px; }
-  .arch-client-body { gap: 18px; }
-  .arch-node { min-height: 60px; padding: 6px 7px; }
-  .arch-node-icon { width: 27px; height: 27px; border-radius: 6px; font-size: .58rem; }
-  .arch-person { width: 36px; height: 36px; font-size: 1rem; }
-  .arch-step { width: 23px; height: 23px; font-size: .5rem; }
-  .engine-control-card { padding: 6px 8px; }
+
+  #engine-view .engine-architecture-map {
+    min-height: 500px;
+  }
+
+  #engine-view .arch-zone-title {
+    height: 50px;
+  }
+
+  #engine-view .arch-zone-title::after {
+    top: 24px;
+  }
+
+  #engine-view .arch-zone-body {
+    height: calc(100% - 50px);
+    padding: 16px 18px;
+  }
+
+  #engine-view .arch-node {
+    min-height: 86px;
+    padding: 10px;
+  }
+
+  #engine-view .arch-node-icon {
+    width: 34px;
+    height: 34px;
+    font-size: .72rem;
+  }
+
+  #engine-view .arch-person {
+    width: 42px;
+    height: 42px;
+  }
+
+  #engine-view .arch-step {
+    width: 27px;
+    height: 27px;
+    font-size: .66rem;
+  }
 }
 
+/* On tablets, keep node text at a readable size and allow controlled horizontal
+   movement within the client architecture rather than scaling the diagram down. */
 @media (max-width: 980px) {
   #engine-view .engine-layout {
-    width: min(760px, 94vw);
+    width: min(820px, 95vw);
     grid-template-rows: auto minmax(0, 1fr) auto;
     overflow-y: auto;
   }
+
+  #engine-view .engine-heading {
+    grid-template-columns: 1fr;
+    gap: 7px;
+    padding-block: 5px;
+  }
+
+  #engine-view .engine-heading p {
+    justify-self: start;
+    max-width: 720px;
+  }
+
   .engine-architecture-map {
     grid-template-columns: 1fr;
     overflow-y: auto;
   }
-  .arch-zone { min-height: 330px; }
-  .arch-zone-cloud { min-height: 250px; }
-  .arch-cross-zone { display: none; }
+
+  .arch-zone {
+    min-height: 380px;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .arch-zone-client .arch-zone-body {
+    min-width: 1050px;
+  }
+
+  .arch-zone-cloud {
+    min-height: 300px;
+  }
+
+  .arch-zone-cloud .arch-zone-body {
+    min-width: 0;
+  }
+
+  .arch-cross-zone {
+    display: none;
+  }
+
   .arch-lane-ingest,
   .arch-lane-query {
-    grid-template-columns: 70px 24px minmax(86px, 1fr) 28px minmax(86px, 1fr) 28px minmax(86px, 1fr) 28px minmax(86px, 1fr);
+    grid-template-columns: 96px 34px 150px 38px 150px 38px 150px 38px 150px;
   }
-  .engine-controls-rail { grid-template-columns: repeat(2, 1fr); }
+
+  .engine-controls-rail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 700px) {
-  #engine-view .engine-heading { grid-template-columns: 1fr; gap: 4px; }
-  #engine-view .engine-heading p { justify-self: start; }
-  .arch-zone { overflow: auto; }
-  .arch-zone-body { min-width: 680px; }
-  .arch-zone-cloud .arch-zone-body { min-width: 0; }
-  .engine-controls-rail { grid-template-columns: 1fr; }
+  #engine-view .top-action,
+  #engine-view .top-label {
+    font-size: .68rem;
+    letter-spacing: .14em;
+  }
+
+  #engine-view .engine-layout {
+    width: 94vw;
+  }
+
+  #engine-view .engine-heading h2 {
+    font-size: clamp(1.25rem, 5vw, 1.6rem);
+  }
+
+  #engine-view .engine-heading p {
+    font-size: .82rem;
+  }
+
+  .arch-zone-client .arch-zone-body {
+    min-width: 980px;
+  }
+
+  .engine-controls-rail {
+    grid-template-columns: 1fr;
+  }
+
+  .engine-control-card span {
+    font-size: .68rem;
+  }
+
+  .engine-control-card strong {
+    font-size: .84rem;
+  }
+
+  .engine-control-card small {
+    font-size: .74rem;
+  }
 }
