@@ -7,9 +7,9 @@
   const POLL_INTERVAL_MS = 900;
   const STORAGE_KEY = "sudochat.prewarm.lastAttempt.v1";
 
-  // Capture the browser's original fetch before the reliability wrapper is loaded.
-  // Warm-up is best-effort and must not create visitor-facing error telemetry.
-  const nativeFetch = window.fetch.bind(window);
+  // Use the browser's original fetch captured by the reliability layer when
+  // available. Warm-up is best-effort and must not create visitor-facing errors.
+  const nativeFetch = window.SudoChatNativeFetch || window.fetch.bind(window);
   let userInteracted = false;
 
   function markUserInteraction() {
