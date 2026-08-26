@@ -71,6 +71,13 @@
           continue;
         }
 
+        if (record.type === "childList" && record.target instanceof Element) {
+          const updatedThinkingText = record.target.matches("[data-thinking-text]")
+            ? record.target
+            : record.target.closest("[data-thinking-text]");
+          if (updatedThinkingText) applyLoadingCopy(updatedThinkingText);
+        }
+
         for (const added of record.addedNodes) {
           if (!(added instanceof Element)) continue;
 
