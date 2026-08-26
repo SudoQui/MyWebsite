@@ -273,4 +273,14 @@
     script.dataset.sudochatPrewarm = "true";
     document.head.appendChild(script);
   }
+
+  // Visitor-facing loading and restricted-network guidance lives separately from
+  // transport logic so reliability behaviour remains unchanged.
+  if (!document.querySelector('script[data-sudochat-loading-ux]')) {
+    const script = document.createElement("script");
+    script.src = "resources/js/sudochat-loading-ux.js";
+    script.async = true;
+    script.dataset.sudochatLoadingUx = "true";
+    document.head.appendChild(script);
+  }
 })();
