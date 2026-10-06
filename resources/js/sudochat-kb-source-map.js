@@ -120,12 +120,40 @@
     return titles;
   }
 
+  function extractCitationDefinitions(value) {
+    const text = String(value || "");
+    const identities = [];
+    const seen = new Set();
+    const definitionPattern = /^\s*\[(\d+)\]\s*:\s*cite:\d+\s*(?:"([^"]+)"|'([^']+)'|([^\r\n]+?))\s*$/gim;
+    let match;
+
+    while ((match = definitionPattern.exec(text)) !== null) {
+      const identity = String(match[2] || match[3] || match[4] || "")
+        .replace(/^[-–—|·\s]+|[-–—|·\s]+$/g, "")
+        .trim();
+      const key = normalise(identity);
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      identities.push(identity);
+    }
+
+    return identities;
+  }
+
   function stripEvidenceSections(value) {
     const lines = String(value || "").split(/\r?\n/);
     const output = [];
+    const citationDefinition = /^\s*\[\d+\]\s*:\s*cite:\d+\s*(?:"[^"]+"|'[^']+'|.+?)\s*$/i;
+    const citationOnly = /^\s*(?:\[\d+\]\s*)+$/;
     let skippingLinkOnlyLines = false;
+    let sawCitationDefinition = false;
 
     for (const line of lines) {
+      if (citationDefinition.test(line)) {
+        sawCitationDefinition = true;
+        continue;
+      }
+
       const evidenceHeading = /^\s*(?:\*\*)?\s*(?:Evidence|Sources?)\s*:?\s*(?:\*\*)?\s*(.*)$/i.exec(line);
       if (evidenceHeading) {
         skippingLinkOnlyLines = !String(evidenceHeading[1] || "").trim();
@@ -144,6 +172,18 @@
       }
 
       output.push(line);
+    }
+
+    // Copilot Studio can append reference definitions such as:
+    // [1]: cite:1 "01_who_am_i.md"
+    // Keep inline [1] markers in the answer, but remove the generated definition
+    // block and a citation-only artefact immediately before it.
+    if (sawCitationDefinition) {
+      while (output.length && !output[output.length - 1].trim()) output.pop();
+      while (output.length && citationOnly.test(output[output.length - 1])) {
+        output.pop();
+        while (output.length && !output[output.length - 1].trim()) output.pop();
+      }
     }
 
     return output.join("\n").replace(/\n{3,}/g, "\n\n").trim();
@@ -201,6 +241,7 @@
     activities.forEach((activity) => {
       const text = String((activity && (activity.text || activity.speak)) || "");
       extractEvidenceTitles(text).forEach(addCandidate);
+      extractCitationDefinitions(text).forEach(addCandidate);
       collectMetadataCandidates(activity && activity.citationEntities, 0, "citationEntities");
       collectMetadataCandidates(activity && activity.entities, 0, "entities");
       collectMetadataCandidates(activity && activity.attachments, 0, "attachments");
