@@ -517,11 +517,25 @@
   }
 
   function cleanAnswerText(value) {
-    return String(value)
+    let text = String(value || "");
+    const citationDefinition = /^\s*\[\d+\]\s*:\s*cite:\d+\s*(?:"[^"]+"|'[^']+'|.+?)\s*$/gim;
+    const hadCitationDefinitions = citationDefinition.test(text);
+    citationDefinition.lastIndex = 0;
+
+    text = text
+      .replace(citationDefinition, "")
       .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, "$1")
       .replace(/^\s*(?:Evidence|Sources?)\s*:\s*.*$/gim, "")
       .replace(/\*\*([^*]+)\*\*/g, "$1")
-      .replace(/`([^`]+)`/g, "$1")
+      .replace(/`([^`]+)`/g, "$1");
+
+    if (hadCitationDefinitions) {
+      // Copilot Studio occasionally emits a standalone marker immediately before
+      // its generated citation-definition block. Inline markers remain intact.
+      text = text.replace(/(?:\r?\n\s*)+(?:\[\d+\]\s*)+\s*$/g, "");
+    }
+
+    return text
       .replace(/\n{3,}/g, "\n\n")
       .trim();
   }
